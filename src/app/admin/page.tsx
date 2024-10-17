@@ -1,61 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { getEvent } from "@/actions/events";
 import { getContestStatus } from "@/actions/codeforces";
-import Loading from "@/components/common/Loading";
 import Page from "@/components/common/Page";
 import CreateContestModal from "./create-contest-modal";
 import CreateManualSubmissionModal from "./create-manual-submission-modal";
-import { Input } from "@/components/ui/input";
+import axios from "axios";
 
 const AdminDashboard = ({ slug }: { slug: string }) => {
-  const [accessToken, setAccessToken] = useState("");
-
-  const handleSubmit = async () => {
-    // await checkUser
-    const isAuthenticated = accessToken === "turinghut";
-    if (isAuthenticated) {
-      // TODO: change this to support multiple events
-      localStorage.setItem(`accessToken`, accessToken);
-      window.location.reload();
-    } else {
-      toast.error("Invalid access token");
-    }
-  };
-
-  if (localStorage.getItem(`accessToken`)) {
-    return <AuthunticatedPage slug={slug} />;
-  }
-
-  return (
-    <form className="p-10 flex gap-5">
-      <Input
-        value={accessToken}
-        onChange={(e) => setAccessToken(e.target.value)}
-      />
-      <Button onClick={handleSubmit}>Submit</Button>
-    </form>
-  );
-};
-
-export default AdminDashboard;
-
-const AuthunticatedPage = async ({ slug }: { slug: string }) => {
   const isAuthenticated = true;
   const [selectedContest, setSelectedContest] = useState<any>(null);
   const [invitation, setInvitation] = useState("");
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [event, setEvent] = useState<any>(null);
 
-  const event = await getEvent(slug);
-
-  if (!event) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    const fetchEvent = async () => {
+      const response = await axios.post("/api/getevent", { slug: "octcoder-2k24" });
+      setEvent(response.data);
+    };
+    fetchEvent();
+  }, [slug]);
 
   const contests = event?.contests || [];
   const eventId = event?.id || "";
@@ -70,7 +39,7 @@ const AuthunticatedPage = async ({ slug }: { slug: string }) => {
     if (selectedContest) {
       setIsFetching(true);
       try {
-        const result = await getContestStatus(slug);
+        const result = await getContestStatus(selectedContest.contestId);
         setSubmissions(result);
 
         toast.dismiss();
@@ -85,26 +54,10 @@ const AuthunticatedPage = async ({ slug }: { slug: string }) => {
   };
 
   const saveData = async (submissionData: any) => {
-    try {
-      const response=await api.post("/submissions/code-submission",submissionData);
-      console.log("Submission saved:", response.data);
-    } catch (error) {
-      console.error("Error saving submission:", error);
-    }
+    return;
   };
 
   const handleSaveButton = () => {
-    // const submissionData = {
-    //   relativeTimeSeconds: 123,
-    //   problem: { index: "A" },
-    //   author: {
-    //     participantType: "CONTESTANT",
-    //     members: [{ handle: "user123" }],
-    //   },
-    //   verdict: "OK",
-    //   passedTestCount: 5,
-    // };
-
     try {
       if (submissions.length === 0) {
         toast.error("No submissions to save");
@@ -145,7 +98,7 @@ const AuthunticatedPage = async ({ slug }: { slug: string }) => {
             {contests.map((contest: any) => (
               <div
                 key={contest.contestId}
-                className={`cursor-pointer p-2  ${
+                className={`cursor-pointer p-2 ${
                   selectedContest?.contestId === contest.contestId
                     ? "bg-blue-500 text-white"
                     : "hover:bg-gray-300"
@@ -194,8 +147,6 @@ const AuthunticatedPage = async ({ slug }: { slug: string }) => {
               Show Invitation
             </Button>
           </div>
-
-          {/* <pre>{JSON.stringify(submissions, null, 2)}</pre> */}
 
           {selectedContest && submissions.length > 0 && (
             <div className="mt-16">
@@ -258,3 +209,5 @@ const AuthunticatedPage = async ({ slug }: { slug: string }) => {
     </Page>
   );
 };
+
+export default AdminDashboard;

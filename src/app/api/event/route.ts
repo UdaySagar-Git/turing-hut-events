@@ -1,7 +1,7 @@
 
 // POST /api/event
 
-import { createEvent } from "@/actions/events";
+import { createEvent, getEvent } from "@/actions/events";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {

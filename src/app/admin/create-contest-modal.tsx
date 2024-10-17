@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { queryClient } from "@/actions/api";
 
 const CreateContestModal = ({ eventId ,slug}: { eventId: string ,slug:string}) => {
   const [isAddContestOpen, setIsAddContestOpen] = useState(false);
@@ -30,7 +29,6 @@ const CreateContestModal = ({ eventId ,slug}: { eventId: string ,slug:string}) =
       toast.success("Contest created successfully");
       setNewContest({ contestId: "", startTime: "", endTime: "" });
       setIsAddContestOpen(false);
-      queryClient.invalidateQueries({queryKey:["events",slug]});
     } catch (error) {
       toast.error("Error creating contest");
     }
