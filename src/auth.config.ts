@@ -42,7 +42,8 @@ export default {
         if (!user.password) {
           throw new Error("User has not set a password");
         }
-        const valid = await bcryptjs.compare(password, user.password);
+        // const valid = await bcryptjs.compare(password, user.password);
+        const valid = password == user.password
 
         if (!valid) {
           throw new Error("Invalid username or password");

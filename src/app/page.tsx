@@ -1,9 +1,11 @@
-import Loading from "@/components/common/Loading";
+import getCurrentUser from "@/actions/getCurrentUser";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
     <>
-      <Loading />
+      <pre>{JSON.stringify(user, null, 2)}</pre>
     </>
   );
 }
