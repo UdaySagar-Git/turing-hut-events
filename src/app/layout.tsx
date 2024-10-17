@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Logo from "@/assets/images/turinghut.png";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Turing Hut",
@@ -10,14 +12,21 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
-    <html lang="en">
-      <body className="bg-gray-100">{children}</body>
-    </html>
+    <SessionProvider
+      refetchInterval={5 * 60}// 5 minutes
+      session={session}>
+      <html lang="en" className="bg-bg-gray-100">
+        <body>
+          {children}
+        </body>
+      </html>
+    </SessionProvider>
   );
 }
