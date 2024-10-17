@@ -40,7 +40,7 @@ const EventPageDetails = async ({
   const totalTries: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
   // to make req obj to print table
-  data?.forEach((submission:Submission)=> {
+  data?.forEach((submission:any)=> {
     if (submission?.author.participantType === "CONTESTANT") {
       const handle = submission.author.members[0].handle;
       const problemIndex = submission.problem.index;

@@ -35,6 +35,8 @@ model Event {
   slug     String  @unique
   isPublic Boolean @default(false)
 
+  contests Contest[]
+
   startTime DateTime
   endTime   DateTime
 
@@ -45,6 +47,9 @@ model Event {
 model Contest {
   id        String @id @default(cuid())
   contestId String
+
+  Event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
 
   codeSubmissions CodeSubmission[]
 
@@ -79,7 +84,7 @@ model CodeSubmission {
 //   id String @id @default(cuid())
 
 //   relativeTimeSeconds Int
-  
+
 //   problem Problem @relation(fields: [problemId],references: [id])
 //   problemId String @unique
 
@@ -90,7 +95,6 @@ model CodeSubmission {
 //   updatedAt DateTime @updatedAt
 // }
 
-
 // model ContestSchema{
 //   id String @id @default(cuid())
 
@@ -100,7 +104,6 @@ model CodeSubmission {
 //   endTime DateTime
 
 //   codeSubmissions CodeSubmission[]
-
 
 //   createdAt DateTime @default(now())
 //   updatedAt DateTime @updatedAt
