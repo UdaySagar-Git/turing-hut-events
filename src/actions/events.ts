@@ -11,6 +11,9 @@ export const getEvent = async (slug: string) => {
   const res = await db.event.findUnique({
     where:{
       slug: slug
+    },
+    include:{
+      contests: true
     }
   })
 
