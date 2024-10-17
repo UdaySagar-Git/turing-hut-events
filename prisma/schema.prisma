@@ -46,7 +46,7 @@ model Contest {
   id        String @id @default(cuid())
   contestId String
 
-  codeSubmissions codeSubmission[]
+  codeSubmissions CodeSubmission[]
 
   startTime DateTime
   endTime   DateTime
@@ -55,7 +55,7 @@ model Contest {
   updatedAt DateTime @updatedAt
 }
 
-model codeSubmission {
+model CodeSubmission {
   id String @id @default(cuid())
 
   contestId String?
@@ -66,3 +66,42 @@ model codeSubmission {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// model Problem{
+//   id String @id @default(cuid())
+
+//   index String
+
+//   codeSubmissionSchema CodeSubmissionSchema?
+// }
+
+// model CodeSubmissionSchema{
+//   id String @id @default(cuid())
+
+//   relativeTimeSeconds Int
+  
+//   problem Problem @relation(fields: [problemId],references: [id])
+//   problemId String @unique
+
+//   verdict String
+//   passedTestCount Int
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
+
+
+// model ContestSchema{
+//   id String @id @default(cuid())
+
+//   contestId String
+//   contestInvitationLink String
+//   startTime DateTime
+//   endTime DateTime
+
+//   codeSubmissions CodeSubmission[]
+
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }

@@ -1,29 +1,19 @@
 import { api } from "@/actions/api";
-import { IEvent } from "@/interfaces/events";
+import { db } from "@/lib/db";
 
 export const getAllEvents = async () => {
-  try {
-    const res = await api.get<{
-      events: IEvent[];
-    }>("/events/");
-    return res.data.events;
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    return [];
-  }
+  const events = await db.event.findMany({})
+
+  return events
 };
 
 
 export const getEvent = async (slug: string) => {
-  const res = await api.get<{
-    event: IEvent;
-  }>(`/events/${slug}/`);
-  return res.data.event;
-};
+  const res = await db.event.findUnique({
+    where:{
+      slug: slug
+    }
+  })
 
-// export const createSubmission = async (contestId: string, data) => {
-//     const res = await api.post(
-//       `/api/v1/contests/${contestId}/submissions`,
-//       JSON.parse(data)
-//     );
-// }
+  return res
+};
