@@ -66,8 +66,7 @@ model CodeSubmission {
 
   contestId String?
   Contest   Contest? @relation(fields: [contestId], references: [contestId])
-
-  data Json[]
+  data Json
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
