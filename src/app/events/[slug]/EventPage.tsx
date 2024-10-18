@@ -5,14 +5,17 @@ import { FaPlay } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { Event } from "@prisma/client";
-import { IUser, Submission } from "@/interfaces/codeforces";
+import { IUser } from "@/interfaces/codeforces";
+import { Button } from "@/components/ui/button";
+import FetchSubmissions from "./FetchSubmissions";
 
 
 const EventPageDetails = async ({
-  event,slug
-}:{
-  event : Event,
-  slug:string
+  event,
+  slug
+}: {
+  event: Event,
+  slug: string
 }) => {
 
   // const contestIds = event.contests.map(contest => contest.contestId);
@@ -40,7 +43,7 @@ const EventPageDetails = async ({
   const totalTries: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
   // to make req obj to print table
-  data?.forEach((submission:any)=> {
+  data?.forEach((submission: any) => {
     if (submission?.author.participantType === "CONTESTANT") {
       const handle = submission.author.members[0].handle;
       const problemIndex = submission.problem.index;
@@ -63,7 +66,7 @@ const EventPageDetails = async ({
       // question not found
       if (!list[handle].submissions[problemIndex]) {
         list[handle].submissions[problemIndex] = {
-          contestId:submission.contestId,
+          contestId: submission.contestId,
           accepted: false,
           wrongs: 0,
           time: 0
@@ -104,8 +107,6 @@ const EventPageDetails = async ({
     }
   });
 
-  // console.log(list);
-
   Object.keys(list).forEach((key) => {
     const user = list[key];
     Object.keys(user.submissions).forEach((ques) => {
@@ -114,9 +115,7 @@ const EventPageDetails = async ({
         totalAccepts[ind]++;
       }
     })
-  })
-
-
+  });
 
   Object.keys(list)?.forEach((key) => {
     const user = list[key];
@@ -142,14 +141,11 @@ const EventPageDetails = async ({
     })
   ) as IUser;
   userSubmissions = sortedList;
-  console.log(userSubmissions);
-  console.log(data);
-
-
 
   return (
     (!userSubmissions) ? <div >No data available.</div> : < >
       <div className="px-5">
+        <FetchSubmissions slug={slug} />
         <h1 className="text-center text-4xl mt-5">{event.name}</h1>
         <h1 className="text-center ">Contest is running</h1>
         <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto my-5 text-center bg-[#E1E1E1] rounded-lg">
@@ -180,16 +176,16 @@ const EventPageDetails = async ({
                   <td className="w-[68px] border-r border-[#E1E1E1] text-center">{userData.acceptedCount ? userData.totalPenality : 0}</td>
                   {problems.map((problemIndex) => (
                     <td key={problemIndex} className="w-16 px-[5.2px] py-0.5 border-r border-[#E1E1E1] text-xs">
-                    <p className="font-bold flex justify-center items-center">
-                      {userData.submissions[problemIndex]?.accepted ? 
-                      <span className="text-[#0a0]"><FaPlus className="inline-block pb-0.5 ps-1"/>{userData.submissions[problemIndex]?.wrongs>0?userData.submissions[problemIndex]?.wrongs :''}</span> 
-                      : (userData.submissions[problemIndex] && userData.submissions[problemIndex]?.wrongs !== 0) ? <span className="text-[#00a]"><FaMinus className="inline-block pb-0.5 ps-2"/>{userData.submissions[problemIndex]?.wrongs}</span> : ''
-                      }
-                    </p>
-                    <p className="font-[480] ">{userData.submissions[problemIndex]?.time > 0
-                      ? userData.submissions[problemIndex].accepted && formatTime(userData.submissions[problemIndex].time)
-                      : ' '}</p>
-                  </td>
+                      <p className="font-bold flex justify-center items-center">
+                        {userData.submissions[problemIndex]?.accepted ?
+                          <span className="text-[#0a0]"><FaPlus className="inline-block pb-0.5 ps-1" />{userData.submissions[problemIndex]?.wrongs > 0 ? userData.submissions[problemIndex]?.wrongs : ''}</span>
+                          : (userData.submissions[problemIndex] && userData.submissions[problemIndex]?.wrongs !== 0) ? <span className="text-[#00a]"><FaMinus className="inline-block pb-0.5 ps-2" />{userData.submissions[problemIndex]?.wrongs}</span> : ''
+                        }
+                      </p>
+                      <p className="font-[480] ">{userData.submissions[problemIndex]?.time > 0
+                        ? userData.submissions[problemIndex].accepted && formatTime(userData.submissions[problemIndex].time)
+                        : ' '}</p>
+                    </td>
 
                   ))}
                 </tr>

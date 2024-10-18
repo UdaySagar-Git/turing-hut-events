@@ -26,6 +26,7 @@ import {
 
 import { createEvent } from "@/actions/events"
 import axios from "axios"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -51,10 +52,11 @@ const AddEventDialog = () => {
     },
   })
 
+  const router = useRouter()
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const event = await axios.post("/api/event", values)
-    console.log(event)
+    const response = await axios.post(`/api/events/${values.slug}`, values)
+    router.push(`/events/${response.data.slug}`)
   }
 
   return (

@@ -21,7 +21,7 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
 
   useEffect(() => {
     const fetchEvent = async () => {
-      const response = await axios.post("/api/getevent", { slug });
+      const response = await axios.get(`/api/events/${slug}`);
       setEvent(response.data);
     };
     fetchEvent();
