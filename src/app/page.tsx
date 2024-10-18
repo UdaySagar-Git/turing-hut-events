@@ -1,4 +1,4 @@
-import { getAllEvents } from "@/actions/events"
+import { getAllEvents } from "@/actions/events" 
 import Loading from "@/components/common/Loading"
 import day from "@/lib/dayjs"
 import Link from "next/link"

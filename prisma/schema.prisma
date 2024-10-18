@@ -46,10 +46,11 @@ model Event {
 
 model Contest {
   id        String @id @default(cuid())
-  contestId String
+  contestId String @unique
 
   Event   Event?  @relation(fields: [eventId], references: [id])
   eventId String?
+  invitationLink String?
 
   codeSubmissions CodeSubmission[]
 

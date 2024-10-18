@@ -54,6 +54,12 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
     }
   };
 
+  useEffect(() => {
+    if (selectedContest) {
+      fetchSubmissions();
+    }
+  }, [selectedContest]);
+
   const saveData = async (submissionData: any) => {
     return;
   };
@@ -99,10 +105,11 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             {contests.map((contest: any) => (
               <div
                 key={contest.contestId}
-                className={`cursor-pointer p-2 ${selectedContest?.contestId === contest.contestId
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-gray-300"
-                  }`}
+                className={`cursor-pointer p-2 ${
+                  selectedContest?.contestId === contest.contestId
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-gray-300"
+                }`}
                 onClick={() => setSelectedContest(contest)}
               >
                 {contest.contestId}
@@ -117,12 +124,6 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
               <div className="flex items-center justify-between gap-3">
                 <Button
-                  onClick={fetchSubmissions}
-                  disabled={!selectedContest || isFetching}
-                >
-                  {isFetching ? "Fetching..." : "Fetch"}
-                </Button>
-                <Button
                   onClick={handleSaveButton}
                   disabled={!selectedContest || isSaving}
                 >
@@ -133,14 +134,14 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             <CreateManualSubmissionModal />
           </div>
 
-          <div className="my-8">
-            <h2 className="text-xl font-semibold mb-2">
-              Paste Invitation Link
-            </h2>
+          <div className="my-8 flex flex-row items-center gap-6">
+            <h2 className="text-xl font-semibold mb-2 md:mb-0">
+              Invitation Link
+            </h2> 
             <input
               value={invitation}
               onChange={(e) => setInvitation(e.target.value)}
-              className="w-full border p-2 mb-2"
+              className="w-full md:flex-1 border p-2 mb-2 md:mb-0"
               placeholder="Paste the contest invitation Link"
             />
             <Button className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
