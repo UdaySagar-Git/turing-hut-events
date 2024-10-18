@@ -2,7 +2,6 @@ import { db } from "@/lib/db"
 import { InputJsonValue } from "@prisma/client/runtime/library";
 import crypto from 'crypto'
 
-
 export const getLatestSubmissionsByContest = async (contestId: string) => {
   const latestSubmissions = await db.codeSubmission.findFirst({
     where: { contestId: contestId },
@@ -11,6 +10,33 @@ export const getLatestSubmissionsByContest = async (contestId: string) => {
 
   return latestSubmissions?.data
 }
+
+export const getStatusUrl = async (contestId: string) => {
+  const statusBaseUrl = 'https://codeforces.com/api/contest.status';
+  const apiKey = process.env.NEXT_PUBLIC_CODEFORCES_API_KEY;
+  const apiSecret = process.env.NEXT_PUBLIC_CODEFORCES_API_SECRET;
+
+  const time = Math.floor(Date.now() / 1000);
+  const rand = time.toString().slice(-6);
+
+  const params: any = {
+    contestId: contestId,
+    asManager: true,
+    apiKey: apiKey,
+    time: time,
+    showUnofficial: true,
+  };
+
+  const sortedParams = Object.keys(params).sort().map(key => `${key}=${params[key]}`).join('&');
+  const statusSigStr = `${rand}/contest.status?${sortedParams}#${apiSecret}`;
+  const statusApiSig = crypto.createHash('sha512').update(statusSigStr).digest('hex');
+
+  params.apiSig = `${rand}${statusApiSig}`;
+  const statusUrl = `${statusBaseUrl}?${new URLSearchParams(params).toString()}`;
+
+  return statusUrl;
+}
+
 
 export const getAllSubmissionsByEvent = async (slug: string) => {
   const event = await db.contest.findMany({
@@ -50,27 +76,8 @@ export const getAllSubmissionsByEvent = async (slug: string) => {
 }
 
 export const getContestStandingsAsManager = async (contestId: string) => {
-  const statusBaseUrl = 'https://codeforces.com/api/contest.status';
-  const apiKey = process.env.CODEFORCES_API_KEY;
-  const apiSecret = process.env.CODEFORCES_API_SECRET;
+  const statusUrl = await getStatusUrl(contestId);
 
-  const time = Math.floor(Date.now() / 1000);
-  const rand = time.toString().slice(-6);
-
-  const params: any = {
-    contestId: contestId,
-    asManager: true,
-    apiKey: apiKey,
-    time: time,
-    showUnofficial: true,
-  };
-
-  const sortedParams = Object.keys(params).sort().map(key => `${key}=${params[key]}`).join('&');
-  const statusSigStr = `${rand}/contest.status?${sortedParams}#${apiSecret}`;
-  const statusApiSig = crypto.createHash('sha512').update(statusSigStr).digest('hex');
-
-  params.apiSig = `${rand}${statusApiSig}`;
-  const statusUrl = `${statusBaseUrl}?${new URLSearchParams(params).toString()}`;
   try {
     const statusResponse = await fetch(statusUrl);
     const statusData = await statusResponse.json();

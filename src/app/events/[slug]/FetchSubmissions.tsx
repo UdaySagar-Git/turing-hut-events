@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import axios from 'axios'
 import React from 'react'
 
-const FetchSubmissions = ({ contestId }: { contestId: string }) => {
+const FetchSubmissions = ({ contestId }: { contestId?: string }) => {
 
   const handleFetchSubmissions = async () => {
     if (!contestId) {
@@ -20,7 +20,7 @@ const FetchSubmissions = ({ contestId }: { contestId: string }) => {
   return (
     <div className="flex gap-2 m-5 items-center">
       <span>{contestId}</span>
-      <Button onClick={handleFetchSubmissions}>
+      <Button onClick={handleFetchSubmissions} disabled={!contestId}>
         fetch + db add
       </Button>
     </div>

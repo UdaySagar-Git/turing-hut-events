@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,16 +13,23 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import axios from "axios";
+import { getStatusUrl } from "@/actions/codeforces";
 
 const CreateManualSubmissionModal = ({ contestId }: { contestId: string }) => {
   const [isManualSubmissionsOpen, setIsManualSubmissionsOpen] = useState(false);
-  const [manualSubmission, setManualSubmission] = useState("");
+  const [manualSubmission, setManualSubmission] = useState<any>(null);
+
+  const handleGetStatusUrl = async () => {
+    const url = await getStatusUrl(contestId);
+    window.open(url, "_blank");
+  };
 
   const handleManualSubmission = async () => {
     try {
       toast.loading("Submitting manual data");
+      const parsedSubmission = JSON.parse(manualSubmission);
       const res = await axios.post(`/api/contest/${contestId}/submissions`, {
-        data: manualSubmission,
+        data: parsedSubmission.result,
       });
 
       toast.success("Manual submission successful");
@@ -45,7 +53,7 @@ const CreateManualSubmissionModal = ({ contestId }: { contestId: string }) => {
           <DialogHeader>
             <DialogTitle>Add Manual Submission</DialogTitle>
             <DialogDescription>
-              Paste the submission JSON data below.
+              Paste the submission JSON data below. from <Button variant="link" className="text-blue-500 hover:underline" onClick={handleGetStatusUrl}>here</Button>
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
