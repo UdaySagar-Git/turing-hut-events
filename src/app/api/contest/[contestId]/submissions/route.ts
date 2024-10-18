@@ -1,9 +1,6 @@
 // GET /api/contest/:contestId/submissions
 
-import {
-  addCodeSubmissions,
-  getContestStandingsAsManager,
-} from "@/actions/codeforces";
+import { addCodeSubmissions, getLatestSubmissionsByContest } from "@/actions/codeforces";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -12,7 +9,7 @@ export async function GET(
 ) {
   const { contestId } = params;
 
-  const submissions = await getContestStandingsAsManager(contestId);
+  const submissions = await getLatestSubmissionsByContest(contestId);
 
   return NextResponse.json(submissions);
 }
@@ -26,8 +23,6 @@ export async function POST(
 ) {
   const { contestId } = params;
   const { data } = await req.json();
-
-  
 
   const newSubmission = await addCodeSubmissions(contestId, data);
 

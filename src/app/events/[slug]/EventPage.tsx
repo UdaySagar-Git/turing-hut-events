@@ -1,5 +1,5 @@
 import Loading from "@/components/common/Loading";
-import { getContestStatus } from "@/actions/codeforces";
+import { getAllSubmissionsByEvent } from "@/actions/codeforces";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { FaPlay } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
@@ -17,7 +17,7 @@ const EventPageDetails = async ({
   slug: string
 }) => {
 
-  const data = await getContestStatus(slug)
+  const data = await getAllSubmissionsByEvent(slug)
   const contestIds = event.contests.map(contest => contest.contestId);
 
   if (!data) {

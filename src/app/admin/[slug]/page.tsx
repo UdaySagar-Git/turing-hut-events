@@ -3,20 +3,16 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { getContestStatus } from "@/actions/codeforces";
 import Page from "@/components/common/Page";
 import CreateContestModal from "../_components/create-contest-modal";
 import CreateManualSubmissionModal from "../_components/create-manual-submission-modal";
 import axios from "axios";
+import FetchSubmissions from "@/app/events/[slug]/FetchSubmissions";
 
 const AdminDashboard = ({ params }: { params: { slug: string } }) => {
-  const isAuthenticated = true;
   const [selectedContestId, setSelectedContestId] = useState<string>("");
   const [invitation, setInvitation] = useState("");
   const [submissions, setSubmissions] = useState<any[]>([]);
-  const [isInvitationLoading, setIsInvitationLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [event, setEvent] = useState<any>(null);
   const slug = params.slug;
 
@@ -28,74 +24,18 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
     fetchEvent();
   }, [slug]);
 
-  const contests = event?.contests || [];
-  const eventId = event?.id || "";
-
-  if (!isAuthenticated) {
-    return <div className="text-center mt-8">Authenticating...</div>;
-  }
-
-  const fetchSubmissions = async () => {
-    toast.loading("Fetching submissions from Codeforces");
-
-    if (selectedContestId) {
-      setIsFetching(true);
-      try {
-        const result = await getContestStatus(selectedContestId);
-        setSubmissions(result );
-
-        toast.dismiss();
-        toast.success("Submissions fetched from Codeforces");
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to fetch submissions");
-      } finally {
-        setIsFetching(false);
-      }
-    }
-  };
-
   useEffect(() => {
     if (selectedContestId) {
+      const fetchSubmissions = async () => {
+        const response = await axios.get(`/api/contest/${selectedContestId}/submissions`);
+        setSubmissions(response.data);
+      };
       fetchSubmissions();
     }
   }, [selectedContestId]);
 
-  const saveData = async (submissionData: any) => {
-    return;
-  };
-
-  const handleSaveButton = () => {
-    try {
-      if (submissions.length === 0) {
-        toast.error("No submissions to save");
-        return;
-      }
-      toast.loading("Saving submissions");
-      setIsSaving(true);
-
-      submissions.forEach((submission) => {
-        const submissionData = {
-          relativeTimeSeconds: submission.relativeTimeSeconds,
-          problem: { index: submission.problem.index },
-          author: {
-            participantType: submission.author.participantType,
-            members: [{ handle: submission.author.members[0].handle }],
-          },
-          verdict: submission.verdict,
-          passedTestCount: submission.passedTestCount,
-        };
-        saveData(submissionData);
-      });
-
-      setIsSaving(false);
-      toast.dismiss();
-      toast.success("Submissions saved successfully");
-    } catch (error) {
-      console.error("Error saving submission:", error);
-      toast.error("Failed to save submissions");
-    }
-  };
+  const contests = event?.contests || [];
+  const eventId = event?.id || "";
 
   const handleInvitation = async () => {
     try {
@@ -122,11 +62,10 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             {contests.map((contest: any) => (
               <div
                 key={contest.contestId}
-                className={`cursor-pointer p-2 ${
-                  selectedContestId === contest.contestId
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-300"
-                }`}
+                className={`cursor-pointer p-2 ${selectedContestId === contest.contestId
+                  ? "bg-blue-500 text-white"
+                  : "hover:bg-gray-300"
+                  }`}
                 onClick={() => setSelectedContestId(contest.contestId)}
               >
                 {contest.contestId}
@@ -139,14 +78,7 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-5">
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-              <div className="flex items-center justify-between gap-3">
-                <Button
-                  onClick={handleSaveButton}
-                  disabled={!selectedContestId || isSaving}
-                >
-                  {isSaving ? "Saving..." : "Save"}
-                </Button>
-              </div>
+              <FetchSubmissions contestId={selectedContestId} />
             </div>
             {selectedContestId && (
               <CreateManualSubmissionModal contestId={selectedContestId} />
@@ -166,13 +98,13 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             <Button
               className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded"
               onClick={handleInvitation}
-              disabled={!selectedContestId || isInvitationLoading}
+              disabled={!selectedContestId}
             >
               Show Invitation
             </Button>
           </div>
 
-          {selectedContestId && submissions.length > 0 && (
+          {selectedContestId && submissions?.length > 0 && (
             <div className="mt-16">
               <h2 className="text-xl font-semibold mb-4">
                 Submissions for Contest {selectedContestId}

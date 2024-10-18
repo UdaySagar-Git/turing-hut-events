@@ -10,7 +10,7 @@ const FetchSubmissions = ({ contestId }: { contestId: string }) => {
     if (!contestId) {
       return;
     }
-    const res = await axios.get(`/api/contest/${contestId}/submissions`)
+    const res = await axios.get(`/api/contest/${contestId}/cf-submissions`)
     const statusData = res.data.statusData.result;
     const addSubmissions = await axios.post(`/api/contest/${contestId}/submissions`, { data: statusData })
 

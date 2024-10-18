@@ -2,7 +2,17 @@ import { db } from "@/lib/db"
 import { InputJsonValue } from "@prisma/client/runtime/library";
 import crypto from 'crypto'
 
-export const getContestStatus = async (slug: string) => {
+
+export const getLatestSubmissionsByContest = async (contestId: string) => {
+  const latestSubmissions = await db.codeSubmission.findFirst({
+    where: { contestId: contestId },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return latestSubmissions?.data
+}
+
+export const getAllSubmissionsByEvent = async (slug: string) => {
   const event = await db.contest.findMany({
     where: {
       Event: {
