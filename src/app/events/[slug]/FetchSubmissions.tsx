@@ -1,20 +1,28 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
+import axios from 'axios'
 import React from 'react'
 
-const FetchSubmissions = ({ slug }: { slug: string }) => {
+const FetchSubmissions = ({ contestId }: { contestId?: string }) => {
 
   const handleFetchSubmissions = async () => {
-    const res = await fetch(`http://localhost:3000/api/events/${slug}/submissions`)
-    const data = await res.json()
-    console.log(data);
+    if (!contestId) {
+      return;
+    }
+    const res = await axios.get(`/api/contest/${contestId}/submissions`)
+
+    const statusData = res.data.statusData.result;
+
+    const addSubmissions = await axios.post(`/api/contest/${contestId}/submissions`, { data: statusData })
+
+    console.log(addSubmissions)
   }
 
   return (
-    <div className="flex justify-end m-5">
+    <div className="flex gap-2 m-5">
       <Button onClick={handleFetchSubmissions}>
-        fetch submissions
+        {contestId ? "db add" : "no id"}
       </Button>
     </div>
   )

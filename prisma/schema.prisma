@@ -48,8 +48,8 @@ model Contest {
   id        String @id @default(cuid())
   contestId String @unique
 
-  Event   Event?  @relation(fields: [eventId], references: [id])
-  eventId String?
+  Event          Event?  @relation(fields: [eventId], references: [id])
+  eventId        String?
   invitationLink String?
 
   codeSubmissions CodeSubmission[]
@@ -65,9 +65,9 @@ model CodeSubmission {
   id String @id @default(cuid())
 
   contestId String?
-  Contest   Contest? @relation(fields: [contestId], references: [id])
+  Contest   Contest? @relation(fields: [contestId], references: [contestId])
 
-  data Json
+  data Json[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

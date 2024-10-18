@@ -4,9 +4,8 @@ import { TfiMenuAlt } from "react-icons/tfi";
 import { FaPlay } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
-import { Event } from "@prisma/client";
+import { Contest, Event } from "@prisma/client";
 import { IUser } from "@/interfaces/codeforces";
-import { Button } from "@/components/ui/button";
 import FetchSubmissions from "./FetchSubmissions";
 
 
@@ -14,7 +13,7 @@ const EventPageDetails = async ({
   event,
   slug
 }: {
-  event: Event,
+  event: Event & { contests: Contest[] },
   slug: string
 }) => {
 
@@ -145,7 +144,6 @@ const EventPageDetails = async ({
   return (
     (!userSubmissions) ? <div >No data available.</div> : < >
       <div className="px-5">
-        <FetchSubmissions slug={slug} />
         <h1 className="text-center text-4xl mt-5">{event.name}</h1>
         <h1 className="text-center ">Contest is running</h1>
         <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto my-5 text-center bg-[#E1E1E1] rounded-lg">
@@ -163,6 +161,7 @@ const EventPageDetails = async ({
                 {problems.map((prob, index: number) => (
                   <th key={index} className="w-16 px-[5.2px] py-[3px] border-r text-[#00a] underline border-[#E1E1E1] text-center">
                     <p>{prob}</p>
+                    <FetchSubmissions contestId={event.contests[index]?.contestId} />
                   </th>
                 ))}
               </tr>
