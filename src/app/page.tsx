@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import AddEventDialog from "./AddEventDialog"
+import AddEventDialog from "@/components/AddEventDialog"
 
 
 const Events = async () => {
@@ -39,6 +39,7 @@ const Events = async () => {
               </CardHeader>
               <CardFooter className="flex justify-center pt-4">
                 <Link href={`/events/${event.slug}`}><Button className="w-full">Details</Button></Link>
+                <Link href={`/admin/${event.slug}`}><Button className="w-full">Admin</Button></Link>
               </CardFooter>
             </Card>
           ))}

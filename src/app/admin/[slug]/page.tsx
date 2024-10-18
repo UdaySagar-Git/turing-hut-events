@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { getContestStatus } from "@/actions/codeforces";
 import Page from "@/components/common/Page";
-import CreateContestModal from "./create-contest-modal";
-import CreateManualSubmissionModal from "./create-manual-submission-modal";
+import CreateContestModal from "../_components/create-contest-modal";
+import CreateManualSubmissionModal from "../_components/create-manual-submission-modal";
 import axios from "axios";
 
-const AdminDashboard = ({ slug }: { slug: string }) => {
+const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const isAuthenticated = true;
   const [selectedContest, setSelectedContest] = useState<any>(null);
   const [invitation, setInvitation] = useState("");
@@ -17,10 +17,11 @@ const AdminDashboard = ({ slug }: { slug: string }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [event, setEvent] = useState<any>(null);
+  const slug = params.slug;
 
   useEffect(() => {
     const fetchEvent = async () => {
-      const response = await axios.post("/api/getevent", { slug: "octcoder-2k24" });
+      const response = await axios.post("/api/getevent", { slug });
       setEvent(response.data);
     };
     fetchEvent();
@@ -98,11 +99,10 @@ const AdminDashboard = ({ slug }: { slug: string }) => {
             {contests.map((contest: any) => (
               <div
                 key={contest.contestId}
-                className={`cursor-pointer p-2 ${
-                  selectedContest?.contestId === contest.contestId
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-300"
-                }`}
+                className={`cursor-pointer p-2 ${selectedContest?.contestId === contest.contestId
+                  ? "bg-blue-500 text-white"
+                  : "hover:bg-gray-300"
+                  }`}
                 onClick={() => setSelectedContest(contest)}
               >
                 {contest.contestId}
