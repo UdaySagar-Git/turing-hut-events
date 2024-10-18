@@ -1,19 +1,42 @@
 import { db } from "@/lib/db"
+import { InputJsonValue } from "@prisma/client/runtime/library";
 import crypto from 'crypto'
 
-export const getContestStatus = async (contestId: string) => {
-  const latestSubmissions = await db.codeSubmission.findFirst({
+export const getContestStatus = async (slug: string) => {
+  const event = await db.contest.findMany({
     where: {
-      contestId: contestId
-    },
-    orderBy: {
-      createdAt: "desc"
+      Event: {
+        slug: slug
+      }
     }
   })
 
-  const submissions = latestSubmissions?.data || [];
+  const contestIds = event.map(contest => contest.contestId);
 
-  return submissions;
+  let submissionsByProblemIndex: {
+    [key: string]: any[]
+  } = {};
+
+  for (const contestId of contestIds) {
+    const submissions = await db.codeSubmission.findFirst({
+      where: { contestId: contestId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (submissions && submissions.data && Array.isArray(submissions.data)) {
+      for (const submission of submissions.data) {
+        const problemIndex = (submission as any).problem.index;
+
+        if (!submissionsByProblemIndex[problemIndex]) {
+          submissionsByProblemIndex[problemIndex] = [];
+        }
+
+        submissionsByProblemIndex[problemIndex].push(submission);
+      }
+    }
+  }
+
+  return submissionsByProblemIndex;
 }
 
 export const getContestStandingsAsManager = async (contestId: string) => {
@@ -49,7 +72,7 @@ export const getContestStandingsAsManager = async (contestId: string) => {
 };
 
 
-export const addCodeSubmissions = async (contestId: string, data: any) => {
+export const addCodeSubmissions = async (contestId: string, data: InputJsonValue) => {
   try {
     const newSubmission = await db.codeSubmission.create({
       data: {
