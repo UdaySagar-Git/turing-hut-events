@@ -1,4 +1,4 @@
-
+"use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,16 +11,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import axios from "axios";
 
-const CreateManualSubmissionModal = () => {
+const CreateManualSubmissionModal = ({ contestId }: { contestId: string }) => {
   const [isManualSubmissionsOpen, setIsManualSubmissionsOpen] = useState(false);
   const [manualSubmission, setManualSubmission] = useState("");
 
-
   const handleManualSubmission = async () => {
-    
     try {
-      // await createSubmission(selectedContest.contestId, manualSubmission);
+      toast.loading("Submitting manual data");
+      const res = await axios.post(`/api/contest/${contestId}/submissions`, {
+        data: manualSubmission,
+      });
+
       toast.success("Manual submission successful");
       setIsManualSubmissionsOpen(false);
     } catch (error) {

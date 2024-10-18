@@ -11,9 +11,10 @@ import axios from "axios";
 
 const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const isAuthenticated = true;
-  const [selectedContest, setSelectedContest] = useState<any>(null);
+  const [selectedContestId, setSelectedContestId] = useState<string>("");
   const [invitation, setInvitation] = useState("");
   const [submissions, setSubmissions] = useState<any[]>([]);
+  const [isInvitationLoading, setIsInvitationLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [event, setEvent] = useState<any>(null);
@@ -37,11 +38,11 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const fetchSubmissions = async () => {
     toast.loading("Fetching submissions from Codeforces");
 
-    if (selectedContest) {
+    if (selectedContestId) {
       setIsFetching(true);
       try {
-        const result = await getContestStatus(selectedContest.contestId);
-        setSubmissions(result);
+        const result = await getContestStatus(selectedContestId);
+        setSubmissions(result );
 
         toast.dismiss();
         toast.success("Submissions fetched from Codeforces");
@@ -55,10 +56,10 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   };
 
   useEffect(() => {
-    if (selectedContest) {
+    if (selectedContestId) {
       fetchSubmissions();
     }
-  }, [selectedContest]);
+  }, [selectedContestId]);
 
   const saveData = async (submissionData: any) => {
     return;
@@ -96,6 +97,22 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
     }
   };
 
+  const handleInvitation = async () => {
+    try {
+      // setIsInvitationLoading(true);
+      toast.loading("Posting invitation link");
+      const response = await axios.put(`/api/contest/${selectedContestId}`, {
+        invitationLink: invitation,
+      });
+      toast.dismiss();
+      toast.success("Invitation link updated successfully");
+      // setIsInvitationLoading(false);
+    } catch (error) {
+      console.error("Error updating invitation link:", error);
+      toast.error("Failed to update invitation link");
+    }
+  };
+
   return (
     <Page title={event?.name || "contest"}>
       <div className="flex flex-col md:flex-row h-screen bg-gray-100">
@@ -106,11 +123,11 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
               <div
                 key={contest.contestId}
                 className={`cursor-pointer p-2 ${
-                  selectedContest?.contestId === contest.contestId
+                  selectedContestId === contest.contestId
                     ? "bg-blue-500 text-white"
                     : "hover:bg-gray-300"
                 }`}
-                onClick={() => setSelectedContest(contest)}
+                onClick={() => setSelectedContestId(contest.contestId)}
               >
                 {contest.contestId}
               </div>
@@ -125,34 +142,40 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
               <div className="flex items-center justify-between gap-3">
                 <Button
                   onClick={handleSaveButton}
-                  disabled={!selectedContest || isSaving}
+                  disabled={!selectedContestId || isSaving}
                 >
                   {isSaving ? "Saving..." : "Save"}
                 </Button>
               </div>
             </div>
-            <CreateManualSubmissionModal />
+            {selectedContestId && (
+              <CreateManualSubmissionModal contestId={selectedContestId} />
+            )}
           </div>
 
           <div className="my-8 flex flex-row items-center gap-6">
             <h2 className="text-xl font-semibold mb-2 md:mb-0">
               Invitation Link
-            </h2> 
+            </h2>
             <input
               value={invitation}
               onChange={(e) => setInvitation(e.target.value)}
               className="w-full md:flex-1 border p-2 mb-2 md:mb-0"
               placeholder="Paste the contest invitation Link"
             />
-            <Button className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
+            <Button
+              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded"
+              onClick={handleInvitation}
+              disabled={!selectedContestId || isInvitationLoading}
+            >
               Show Invitation
             </Button>
           </div>
 
-          {selectedContest && submissions.length > 0 && (
+          {selectedContestId && submissions.length > 0 && (
             <div className="mt-16">
               <h2 className="text-xl font-semibold mb-4">
-                Submissions for Contest {selectedContest?.contestId}
+                Submissions for Contest {selectedContestId}
               </h2>
               <div className="overflow-x-auto">
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">

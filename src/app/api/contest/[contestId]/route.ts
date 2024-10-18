@@ -1,5 +1,6 @@
+import { createContest } from "@/actions/contests";
 import { db } from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
+import {  NextResponse } from "next/server";
 
 export async function PUT(
   req: Request,
@@ -13,8 +14,18 @@ export async function PUT(
     where: { contestId },
     data: {
       invitationLink,
+
     },
   });
+
+  return NextResponse.json(res);
+}
+
+
+export async function POST (req: Request){
+  const { contestId,startTime,endTime, eventId } = await req.json();
+
+  const res = await createContest(contestId,startTime,endTime,eventId);
 
   return NextResponse.json(res);
 }

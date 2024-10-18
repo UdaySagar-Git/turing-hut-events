@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {useState} from "react";
+import { useState } from "react";
 import axios from "axios";
 import {
   Dialog,
@@ -14,7 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const CreateContestModal = ({ eventId ,slug}: { eventId: string ,slug:string}) => {
+const CreateContestModal = ({
+  eventId,
+  slug,
+}: {
+  eventId: string;
+  slug: string;
+}) => {
   const [isAddContestOpen, setIsAddContestOpen] = useState(false);
 
   const [newContest, setNewContest] = useState({
@@ -25,11 +31,34 @@ const CreateContestModal = ({ eventId ,slug}: { eventId: string ,slug:string}) =
 
   const handleCreateContest = async () => {
     try {
-      await axios.post(`/api/v1/events/${eventId}/contest`, newContest);
+      toast.loading("Creating contest");
+      const formattedStartTime = new Date(newContest.startTime).toISOString();
+      const formattedEndTime = new Date(newContest.endTime).toISOString();
+
+      const formattedContest = {
+        contestId: newContest.contestId,
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
+        eventId: eventId,
+      };
+
+
+      const res = await axios.post(
+        `/api/contest/${formattedContest.contestId}`,
+        formattedContest
+      );
+
+      toast.dismiss();
       toast.success("Contest created successfully");
-      setNewContest({ contestId: "", startTime: "", endTime: "" });
+      setNewContest({
+        contestId: "",
+        startTime: "",
+        endTime: "",
+      });
       setIsAddContestOpen(false);
+
     } catch (error) {
+      toast.dismiss();
       toast.error("Error creating contest");
     }
   };
