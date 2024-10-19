@@ -10,6 +10,7 @@ import FetchSubmissions from "./FetchSubmissions";
 import day from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 
 const EventPageDetails = async ({
@@ -143,6 +144,8 @@ const EventPageDetails = async ({
   ) as IUser;
   userSubmissions = sortedList;
 
+  const session=await getCurrentUser()
+
   return (
     (!userSubmissions) ? <div >No data available.</div> : < >
       <div className="px-5">
@@ -152,18 +155,22 @@ const EventPageDetails = async ({
           <Link href={`/events/${slug}/editorials`}>
             <Button>Editorials</Button>
           </Link>
-          <Link href={`/admin/${slug}`}>
-            <Button>Admin</Button>
-          </Link>
-        </div>
-
-        <div className="flex gap-2 m-5">
           {
-            contestIds.map((contestId) => (
-              <FetchSubmissions contestId={contestId} />
-            ))
+            session && <Link href={`/admin/${slug}`}>
+              <Button>Admin</Button>
+            </Link>
           }
         </div>
+
+        {
+          session && <div className="flex gap-2 m-5">
+            {
+              contestIds.map((contestId) => (
+                <span key={contestId}><FetchSubmissions contestId={contestId} /></span>
+              ))
+            }
+            </div>
+        }
         <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto my-5 text-center bg-[#E1E1E1] rounded-lg">
           <div className="flex justify-between">
             <h1 className="text-left font-[400] ps-1 flex ">Standings<TfiMenuAlt className="mt-1.5 ms-1 font-semibold" /></h1>

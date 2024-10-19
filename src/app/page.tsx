@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card"
 import AddEventDialog from "@/components/AddEventDialog"
 import { Toaster } from "@/components/ui/toaster"
+import getCurrentUser from "@/actions/getCurrentUser"
 
 const Events = async () => {
 
@@ -22,12 +23,15 @@ const Events = async () => {
     return <Loading />
   }
 
+  const session=await getCurrentUser()
 
   return (
     <div>
       <Toaster/>
       <div className="absolute top-0 z-[-2] h-screen w-screen bg-white bg-[radial-gradient(100%_50%_at_50%_0%,rgba(0,150,0,0.3)_0,rgba(0,150,0,0)_50%,rgba(0,150,0,0)_100%)]"></div>
-      <AddEventDialog />
+      {
+        session && <AddEventDialog />
+      }
 
       <h1 className="text-center mb-8 mt-16 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">Events</h1>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -38,9 +42,11 @@ const Events = async () => {
                 <CardTitle className="text-xl font-semibold">{event.name}</CardTitle>
                 <CardDescription className="text-sm text-gray-500">{day(event.startTime).fromNow()}</CardDescription>
               </CardHeader>
-              <CardFooter className="flex justify-center pt-4">
+              <CardFooter className="flex space-x-2 justify-center pt-4">
                 <Link href={`/events/${event.slug}`}><Button className="w-full">Details</Button></Link>
-                <Link href={`/admin/${event.slug}`}><Button className="w-full">Admin</Button></Link>
+                {
+                  session && <Link href={`/admin/${event.slug}`}><Button className="w-full">Admin</Button></Link>
+                }
               </CardFooter>
             </Card>
           ))}
