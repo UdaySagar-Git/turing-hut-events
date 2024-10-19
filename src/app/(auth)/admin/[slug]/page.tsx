@@ -23,6 +23,7 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
     const fetchEvent = async () => {
       const response = await axios.get(`/api/events/${slug}`);
       setEvent(response.data);
+      setAnnouncement(response.data.announcement);
     };
     fetchEvent();
   }, [slug]);
@@ -48,14 +49,9 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
       return;
     }
     try {
-      toast.loading("Sending announcement...");
-
-      const res = await axios.put(`/api/events/${eventId}`, {
+      const res = await axios.put(`/api/events/${slug}`, {
         announcement,
       });
-
-      toast.dismiss();
-      toast.success("Announcement sent successfully");
       setAnnouncement("");
     } catch (error) {
       toast.dismiss();
