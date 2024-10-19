@@ -1,23 +1,34 @@
+import { Role } from "@prisma/client";
 import authConfig from "./auth.config";
-import NextAuth from "next-auth";
+import NextAuth, { User } from "next-auth";
 export const { auth } = NextAuth(authConfig);
-
 
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
+  
+  // todo: change this type
+  const user = req.auth?.user as User & { role?: Role };
+  const isAdmin = user?.role === "ADMIN";
 
-  const publicRoutes = ["/public"];
   const authRoutes = ["/signin", "/signup"];
 
   const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth");
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isAdminRoute = nextUrl.pathname.includes("/admin");
+  const isPublicRoute = !isAdminRoute;
 
+  // Admin routes are only accessible to admins
+  if (isAdminRoute && !isAdmin) {
+    return Response.redirect(new URL("/", nextUrl));
+  }
+
+  // API routes are not authenticated (and not admin routes)
   if (isApiAuthRoute) {
     return;
   }
 
+  // Auth routes are not accessible if the user is already logged in
   if (isAuthRoute) {
     if (isLoggedIn) {
       return Response.redirect(new URL("/", nextUrl));
@@ -25,21 +36,8 @@ export default auth((req) => {
     return;
   }
 
-  if (!isLoggedIn && !isPublicRoute) {
-    let callbackUrl = nextUrl.pathname;
-    if (nextUrl.search) {
-      callbackUrl += nextUrl.search;
-    }
-
-    const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-
-    return Response.redirect(
-      new URL(`/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-    );
-  }
-
-  if (isLoggedIn && isPublicRoute) {
-    return Response.redirect(new URL("/signin", nextUrl));
+  if (isPublicRoute) {
+    return;
   }
 
   return;
