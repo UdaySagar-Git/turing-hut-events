@@ -9,10 +9,10 @@ export const getAllEvents = async () => {
 
 export const getEvent = async (slug: string) => {
   const res = await db.event.findUnique({
-    where:{
+    where: {
       slug: slug
     },
-    include:{
+    include: {
       contests: true
     }
   })
@@ -33,3 +33,36 @@ export const createEvent = async (data: any) => {
 
   return res
 };
+
+export const createEditorial = async ({
+  eventSlug,
+  problemIndex,
+  problemLink,
+  content
+}: {
+  eventSlug: string,
+  problemIndex: string,
+  problemLink?: string,
+  content: string
+}) => {
+  const res = await db.editorial.create({
+    data: {
+      eventSlug,
+      problemIndex,
+      problemLink,
+      content
+    }
+  })
+
+  return res
+}
+
+export const getEditorial = async (slug: string, problemIndex: string) => {
+  const res = await db.editorial.findUnique({
+    where: {
+      eventSlug_problemIndex: { eventSlug: slug, problemIndex: problemIndex }
+    }
+  })
+
+  return res
+}

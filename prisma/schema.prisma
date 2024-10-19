@@ -38,6 +38,7 @@ model Event {
   isPublic Boolean @default(false)
 
   announcement String?
+  editorials   Editorial[]
 
   contests Contest[]
 
@@ -46,6 +47,21 @@ model Event {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Editorial {
+  id      String  @id @default(cuid())
+  Event   Event?  @relation(fields: [eventSlug], references: [slug])
+  eventSlug String?
+
+  problemIndex String
+  problemLink  String?
+  content      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventSlug, problemIndex])
 }
 
 model Contest {
@@ -78,11 +94,11 @@ model CodeSubmission {
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  
-  userId       String
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   sessionToken String   @unique
   expires      DateTime
 
