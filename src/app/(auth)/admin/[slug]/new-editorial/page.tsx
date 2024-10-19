@@ -65,7 +65,7 @@ export default function NewEditorialPage({ params }: { params: { slug: string } 
             <Label htmlFor="problemLink">Problem Link</Label>
             <Input
               id="problemLink"
-              placeholder="https://example.com/problem"
+              placeholder="https://codeforces.com/problem"
               value={problemLink}
               onChange={(e) => setProblemLink(e.target.value)}
             />

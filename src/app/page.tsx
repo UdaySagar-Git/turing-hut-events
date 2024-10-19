@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import AddEventDialog from "@/components/AddEventDialog"
-
+import { Toaster } from "@/components/ui/toaster"
 
 const Events = async () => {
 
@@ -25,6 +25,7 @@ const Events = async () => {
 
   return (
     <div>
+      <Toaster/>
       <div className="absolute top-0 z-[-2] h-screen w-screen bg-white bg-[radial-gradient(100%_50%_at_50%_0%,rgba(0,150,0,0.3)_0,rgba(0,150,0,0)_50%,rgba(0,150,0,0)_100%)]"></div>
       <AddEventDialog />
 
