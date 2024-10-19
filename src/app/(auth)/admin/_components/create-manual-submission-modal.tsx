@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,6 +36,7 @@ const CreateManualSubmissionModal = ({ contestId }: { contestId: string }) => {
       setIsManualSubmissionsOpen(false);
     } catch (error) {
       toast.error("Error submitting manual data");
+      console.error(error)
     }
   };
   return (

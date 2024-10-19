@@ -80,9 +80,6 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
       <div className="flex flex-col md:flex-row h-screen bg-gray-100">
         <div className="w-full md:w-64 bg-white shadow-lg">
           <div className="p-4">
-            <Link href={`/admin/${slug}/new-editorial`}>
-              <Button>Create Editorial</Button>
-            </Link>
             <h2 className="text-xl font-semibold mb-4">Contests</h2>
             {contests.map((contest: any) => (
               <div
@@ -98,6 +95,11 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
               </div>
             ))}
             <CreateContestModal eventId={eventId} slug={slug} />
+            <div className="py-4">
+              <Link href={`/admin/${slug}/new-editorial`}>
+                <Button>Create Editorial</Button>
+              </Link>
+            </div>
           </div>
         </div>
         <div className="flex-1 p-8 overflow-auto">
