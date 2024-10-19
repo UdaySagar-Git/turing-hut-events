@@ -7,6 +7,7 @@ import { FaMinus } from "react-icons/fa";
 import { Contest, Event } from "@prisma/client";
 import { IUser } from "@/interfaces/codeforces";
 import FetchSubmissions from "./FetchSubmissions";
+import day from "@/lib/dayjs";
 
 
 const EventPageDetails = async ({
@@ -17,7 +18,7 @@ const EventPageDetails = async ({
   slug: string
 }) => {
 
-  const data = await getAllSubmissionsByEvent(slug)
+  const { data, lastUpdated } = await getAllSubmissionsByEvent(slug)
   const contestIds = event.contests.map(contest => contest.contestId);
 
   if (!data) {
@@ -144,7 +145,7 @@ const EventPageDetails = async ({
     (!userSubmissions) ? <div >No data available.</div> : < >
       <div className="px-5">
         <h1 className="text-center text-4xl mt-5">{event.name}</h1>
-        <h1 className="text-center ">Contest is running</h1>
+        <h1 className="text-center ">{event.announcement}</h1>
 
         <div className="flex gap-2 m-5">
           {
@@ -168,6 +169,7 @@ const EventPageDetails = async ({
                 {problems.map((prob, index: number) => (
                   <th key={index} className={`w-16 px-[5.2px] py-[3px] border-r ${data[prob] ? "text-[#0a0]" : "text-gray-400"} underline border-[#E1E1E1] text-center`}>
                     <p>{prob}</p>
+                    <p className="text-xs text-neutral-500">{lastUpdated[prob] ? day(lastUpdated[prob]).format("hh:mm:ss A") : ""}</p>
                   </th>
                 ))}
               </tr>

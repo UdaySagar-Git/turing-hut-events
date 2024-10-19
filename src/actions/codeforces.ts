@@ -53,6 +53,10 @@ export const getAllSubmissionsByEvent = async (slug: string) => {
     [key: string]: any[]
   } = {};
 
+  let submissionsLastUpdated: {
+    [key: string]: Date
+  } = {};
+
   for (const contestId of contestIds) {
     const submissions = await db.codeSubmission.findFirst({
       where: { contestId: contestId },
@@ -68,11 +72,12 @@ export const getAllSubmissionsByEvent = async (slug: string) => {
         }
 
         submissionsByProblemIndex[problemIndex].push(submission);
+        submissionsLastUpdated[problemIndex] = submissions.createdAt;
       }
     }
   }
 
-  return submissionsByProblemIndex;
+  return { data: submissionsByProblemIndex, lastUpdated: submissionsLastUpdated };
 }
 
 export const getContestStandingsAsManager = async (contestId: string) => {

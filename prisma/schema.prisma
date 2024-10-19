@@ -37,6 +37,8 @@ model Event {
   slug     String  @unique
   isPublic Boolean @default(false)
 
+  announcement String?
+
   contests Contest[]
 
   startTime DateTime
