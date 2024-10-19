@@ -24,7 +24,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { createEvent } from "@/actions/events"
 import axios from "axios"
 import { useRouter } from "next/navigation"
 

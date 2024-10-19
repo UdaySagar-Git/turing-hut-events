@@ -25,6 +25,8 @@ model User {
   role     Role   @default(USER)
   password String
 
+  Session Session[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -48,8 +50,9 @@ model Contest {
   id        String @id @default(cuid())
   contestId String @unique
 
-  Event          Event?  @relation(fields: [eventId], references: [id])
-  eventId        String?
+  eventId String?
+  Event   Event?  @relation(fields: [eventId], references: [id])
+
   invitationLink String?
 
   codeSubmissions CodeSubmission[]
@@ -66,7 +69,20 @@ model CodeSubmission {
 
   contestId String?
   Contest   Contest? @relation(fields: [contestId], references: [contestId])
-  data Json
+  data      Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  sessionToken String   @unique
+  expires      DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
