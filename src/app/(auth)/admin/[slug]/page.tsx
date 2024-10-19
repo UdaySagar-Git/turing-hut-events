@@ -15,6 +15,8 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const [invitation, setInvitation] = useState("");
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [event, setEvent] = useState<any>(null);
+  const [announcement, setAnnouncement] = useState("");
+  const [isInvitationLoading, setIsInvitationLoading] = useState(false);
   const slug = params.slug;
 
   useEffect(() => {
@@ -28,7 +30,9 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   useEffect(() => {
     if (selectedContestId) {
       const fetchSubmissions = async () => {
-        const response = await axios.get(`/api/contest/${selectedContestId}/submissions`);
+        const response = await axios.get(
+          `/api/contest/${selectedContestId}/submissions`
+        );
         setSubmissions(response.data);
       };
       fetchSubmissions();
@@ -38,16 +42,37 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const contests = event?.contests || [];
   const eventId = event?.id || "";
 
+  const handleAnnouncementSubmit = async () => {
+    if (!announcement.trim()) {
+      toast.error("Announcement cannot be empty");
+      return;
+    }
+    try {
+      toast.loading("Sending announcement...");
+
+      const res = await axios.put(`/api/events/${eventId}`, {
+        announcement,
+      });
+
+      toast.dismiss();
+      toast.success("Announcement sent successfully");
+      setAnnouncement("");
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Failed to send the announcement");
+    }
+  };
+
   const handleInvitation = async () => {
     try {
-      // setIsInvitationLoading(true);
+      setIsInvitationLoading(true);
       toast.loading("Posting invitation link");
       const response = await axios.put(`/api/contest/${selectedContestId}`, {
         invitationLink: invitation,
       });
       toast.dismiss();
       toast.success("Invitation link updated successfully");
-      // setIsInvitationLoading(false);
+      setIsInvitationLoading(false);
     } catch (error) {
       console.error("Error updating invitation link:", error);
       toast.error("Failed to update invitation link");
@@ -66,10 +91,11 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             {contests.map((contest: any) => (
               <div
                 key={contest.contestId}
-                className={`cursor-pointer p-2 ${selectedContestId === contest.contestId
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-gray-300"
-                  }`}
+                className={`cursor-pointer p-2 ${
+                  selectedContestId === contest.contestId
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-gray-300"
+                }`}
                 onClick={() => setSelectedContestId(contest.contestId)}
               >
                 {contest.contestId}
@@ -89,24 +115,46 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             )}
           </div>
 
-          <div className="my-8 flex flex-row items-center gap-6">
-            <h2 className="text-xl font-semibold mb-2 md:mb-0">
-              Invitation Link
-            </h2>
-            <input
-              value={invitation}
-              onChange={(e) => setInvitation(e.target.value)}
-              className="w-full md:flex-1 border p-2 mb-2 md:mb-0"
-              placeholder="Paste the contest invitation Link"
-            />
-            <Button
-              className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded"
-              onClick={handleInvitation}
-              disabled={!selectedContestId}
-            >
-              Show Invitation
-            </Button>
-          </div>
+          {selectedContestId ? (
+            <div className="my-8 flex flex-row items-center gap-6">
+              <h2 className="text-xl font-semibold mb-2 md:mb-0">
+                Invitation Link
+              </h2>
+              <input
+                value={invitation}
+                onChange={(e) => setInvitation(e.target.value)}
+                className="w-full md:flex-1 border p-2 mb-2 md:mb-0"
+                placeholder="Paste the contest invitation Link"
+              />
+              <Button
+                className="bg-emerald-600/80 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded"
+                onClick={handleInvitation}
+                disabled={!selectedContestId}
+              >
+                Save
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center p-6 bg-white shadow-md rounded-lg max-w-lg mx-auto mt-10">
+              <h2 className="text-xl font-semibold mb-4 text-gray-700">
+                Make an Announcement
+              </h2>
+
+              <input
+                value={announcement}
+                onChange={(e) => setAnnouncement(e.target.value)}
+                placeholder="Write your announcement here..."
+                className="w-full h-20 p-4 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
+              />
+
+              <button
+                onClick={handleAnnouncementSubmit}
+                className="mt-4 w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50"
+              >
+                Send Announcement
+              </button>
+            </div>
+          )}
 
           {selectedContestId && submissions?.length > 0 && (
             <div className="mt-16">
