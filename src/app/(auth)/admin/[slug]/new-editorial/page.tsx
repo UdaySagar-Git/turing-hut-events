@@ -15,13 +15,13 @@ const NewEditorialPage = ({ params }: { params: { slug: string } }) => {
   const [content, setContent] = useState("**Hello world!!!**");
 
   const handleSubmit = async () => {
-    const res = await axios.post(`/api/events/${slug}/editorial`, {
+    const res = await axios.post(`/api/events/${slug}/editorials`, {
       problemIndex,
       problemLink,
       content
     })
     if (res.status === 200) {
-      router.push(`/events/${slug}/editorial/${problemIndex}`)
+      router.push(`/events/${slug}/editorials/${problemIndex}`)
     }
   }
 

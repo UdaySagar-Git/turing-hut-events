@@ -8,6 +8,8 @@ import { Contest, Event } from "@prisma/client";
 import { IUser } from "@/interfaces/codeforces";
 import FetchSubmissions from "./FetchSubmissions";
 import day from "@/lib/dayjs";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 
 const EventPageDetails = async ({
@@ -146,6 +148,14 @@ const EventPageDetails = async ({
       <div className="px-5">
         <h1 className="text-center text-4xl mt-5">{event.name}</h1>
         <h1 className="text-center ">{event.announcement}</h1>
+        <div className="flex justify-center gap-5">
+          <Link href={`/events/${slug}/editorials`}>
+            <Button>Editorials</Button>
+          </Link>
+          <Link href={`/admin/${slug}`}>
+            <Button>Admin</Button>
+          </Link>
+        </div>
 
         <div className="flex gap-2 m-5">
           {

@@ -66,3 +66,13 @@ export const getEditorial = async (slug: string, problemIndex: string) => {
 
   return res
 }
+
+export const getEventEditorials = async (slug: string) => {
+  const res = await db.editorial.findMany({
+    where: {
+      eventSlug: slug
+    }
+  })
+
+  return res
+}

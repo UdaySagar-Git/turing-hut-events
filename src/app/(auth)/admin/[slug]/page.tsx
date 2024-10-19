@@ -8,6 +8,7 @@ import CreateContestModal from "../_components/create-contest-modal";
 import CreateManualSubmissionModal from "../_components/create-manual-submission-modal";
 import axios from "axios";
 import FetchSubmissions from "@/app/events/[slug]/FetchSubmissions";
+import Link from "next/link";
 
 const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const [selectedContestId, setSelectedContestId] = useState<string>("");
@@ -58,6 +59,9 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
       <div className="flex flex-col md:flex-row h-screen bg-gray-100">
         <div className="w-full md:w-64 bg-white shadow-lg">
           <div className="p-4">
+            <Link href={`/admin/${slug}/new-editorial`}>
+              <Button>Create Editorial</Button>
+            </Link>
             <h2 className="text-xl font-semibold mb-4">Contests</h2>
             {contests.map((contest: any) => (
               <div
