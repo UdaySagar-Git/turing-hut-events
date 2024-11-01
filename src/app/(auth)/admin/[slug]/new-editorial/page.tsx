@@ -21,7 +21,7 @@ export default function NewEditorialPage({ params }: { params: { slug: string } 
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post(`/api/events/${slug}/editorials`, {
+      const res = await axios.post(`/api/events/${slug}/editorial`, {
         problemIndex,
         problemLink,
         content
@@ -30,7 +30,7 @@ export default function NewEditorialPage({ params }: { params: { slug: string } 
         toast({
           title: "Editorial Created",
           description: "Your new editorial has been successfully created.",
-        })
+        });
         router.push(`/events/${slug}/editorials/${problemIndex}`)
       }
     } catch (error) {

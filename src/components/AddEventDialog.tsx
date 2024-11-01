@@ -62,11 +62,15 @@ const AddEventDialog = () => {
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="fixed top-4 right-4 z-10">Add Event</Button>
+          <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded fixed top-4 right-4 z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500">
+            Add Event
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">Add Event</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold">
+              Add Event
+            </DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
@@ -108,12 +112,8 @@ const AddEventDialog = () => {
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        Public
-                      </FormLabel>
-                      <FormDescription>
-                        Make this event public
-                      </FormDescription>
+                      <FormLabel>Public</FormLabel>
+                      <FormDescription>Make this event public</FormDescription>
                     </div>
                   </FormItem>
                 )}
@@ -150,7 +150,7 @@ const AddEventDialog = () => {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
 
 export default AddEventDialog

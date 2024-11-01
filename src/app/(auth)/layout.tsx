@@ -1,5 +1,3 @@
-import { SessionProvider } from "next-auth/react";
-import { auth } from "@/auth";
 import getCurrentUser from "@/actions/getCurrentUser";
 import { redirect } from "next/navigation";
 

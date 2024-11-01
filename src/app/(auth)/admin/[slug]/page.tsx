@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import Page from "@/components/common/Page";
 import CreateContestModal from "../_components/create-contest-modal";
 import CreateManualSubmissionModal from "../_components/create-manual-submission-modal";
@@ -17,6 +17,7 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const [event, setEvent] = useState<any>(null);
   const [announcement, setAnnouncement] = useState("");
   const [isInvitationLoading, setIsInvitationLoading] = useState(false);
+  const { toast } = useToast();
   const slug = params.slug;
 
   useEffect(() => {
@@ -45,33 +46,45 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
 
   const handleAnnouncementSubmit = async () => {
     if (!announcement.trim()) {
-      toast.error("Announcement cannot be empty");
+      toast({
+        title: "Announcement cannot be empty",
+      });
       return;
     }
     try {
+      toast({
+        title: "Sending announcement",
+      });
       const res = await axios.put(`/api/events/${slug}`, {
         announcement,
       });
       setAnnouncement("");
+      toast({
+        title: "Announcement sent successfully",
+      });
     } catch (error) {
-      toast.dismiss();
-      toast.error("Failed to send the announcement");
+      toast({
+        title: "Failed to send the announcement",
+      });
     }
   };
 
   const handleInvitation = async () => {
     try {
       setIsInvitationLoading(true);
-      toast.loading("Posting invitation link");
       const response = await axios.put(`/api/contest/${selectedContestId}`, {
         invitationLink: invitation,
       });
-      toast.dismiss();
-      toast.success("Invitation link updated successfully");
       setIsInvitationLoading(false);
+      toast({
+        title: "Invitation link updated successfully",
+      });
     } catch (error) {
       console.error("Error updating invitation link:", error);
-      toast.error("Failed to update invitation link");
+      setIsInvitationLoading(false);
+      toast({
+        title: "Failed to update invitation link",
+      });
     }
   };
 
@@ -89,7 +102,10 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
                     ? "bg-blue-500 text-white"
                     : "hover:bg-gray-300"
                 }`}
-                onClick={() => setSelectedContestId(contest.contestId)}
+                onClick={() => {
+                  setSelectedContestId(contest.contestId),
+                    setInvitation(contest.invitationLink);
+                }}
               >
                 {contest.contestId}
               </div>
@@ -97,7 +113,9 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             <CreateContestModal eventId={eventId} slug={slug} />
             <div className="py-4">
               <Link href={`/admin/${slug}/new-editorial`}>
-                <Button>Create Editorial</Button>
+                <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded">
+                  Create Editorial
+                </Button>
               </Link>
             </div>
           </div>
@@ -106,7 +124,9 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-5">
               <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-              <FetchSubmissions contestId={selectedContestId} />
+              {selectedContestId && (
+                <FetchSubmissions contestId={selectedContestId} />
+              )}
             </div>
             {selectedContestId && (
               <CreateManualSubmissionModal contestId={selectedContestId} />
@@ -125,7 +145,7 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
                 placeholder="Paste the contest invitation Link"
               />
               <Button
-                className="bg-emerald-600/80 hover:bg-emerald-600 text-white font-bold px-4 py-2 rounded"
+                className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded"
                 onClick={handleInvitation}
                 disabled={!selectedContestId}
               >
@@ -147,9 +167,9 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
 
               <button
                 onClick={handleAnnouncementSubmit}
-                className="mt-4 w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50"
+                className="mt-4 font-semibold w-full bg-[#26755F] text-white py-2 px-4 rounded-md hover:bg-[#26755F]/90 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-opacity-50"
               >
-                Send Announcement
+                Send Announcement !
               </button>
             </div>
           )}
