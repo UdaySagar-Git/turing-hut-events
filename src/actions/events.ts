@@ -76,3 +76,13 @@ export const getEventEditorials = async (slug: string) => {
 
   return res
 }
+
+
+export const deleteEditorial=async (id:string)=>{
+  const res= await db.editorial.delete({
+    where:{
+      id:id
+    }
+  })
+  return res
+}

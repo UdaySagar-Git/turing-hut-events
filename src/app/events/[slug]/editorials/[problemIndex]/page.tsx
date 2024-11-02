@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ExternalLink } from "lucide-react"
 import Link from 'next/link'
+import getCurrentUser from '@/actions/getCurrentUser'
+import DeleteEditorial from '../_components/DeleteEditorial'
+
 
 export default async function EditorialPage({
   params
@@ -13,6 +16,7 @@ export default async function EditorialPage({
 }) {
   const { slug, problemIndex } = params
   const editorial = await getEditorial(slug, problemIndex)
+  const session= await getCurrentUser();
 
   if (!editorial) {
     return (
@@ -38,13 +42,19 @@ export default async function EditorialPage({
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back
               </Link>
             </Button>
-            {editorial.problemLink && (
-              <Button variant="outline" asChild>
-                <a href={editorial.problemLink} target="_blank" rel="noopener noreferrer">
-                  Problem Link <ExternalLink className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
-            )}
+            <div className="flex items-center justify-between gap-2">
+              {editorial.problemLink && (
+                <Button variant="outline" asChild>
+                  <a href={editorial.problemLink} target="_blank" rel="noopener noreferrer">
+                    Problem Link <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
+              )}
+              {
+                session && session.role==="ADMIN" && 
+                <DeleteEditorial editorialId={editorial.id} />
+              }
+            </div>
           </div>
           <CardTitle className="text-3xl font-bold text-center">
             Editorial for Problem {problemIndex}
