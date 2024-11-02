@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import Page from "@/components/common/Page";
 import CreateContestModal from "../_components/create-contest-modal";
 import CreateManualSubmissionModal from "../_components/create-manual-submission-modal";
@@ -17,7 +17,6 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const [event, setEvent] = useState<any>(null);
   const [announcement, setAnnouncement] = useState("");
   const [isInvitationLoading, setIsInvitationLoading] = useState(false);
-  const { toast } = useToast();
   const slug = params.slug;
 
   useEffect(() => {
@@ -46,45 +45,33 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
 
   const handleAnnouncementSubmit = async () => {
     if (!announcement.trim()) {
-      toast({
-        title: "Announcement cannot be empty",
-      });
+      toast.error("Announcement cannot be empty");
       return;
     }
     try {
-      toast({
-        title: "Sending announcement",
-      });
-      const res = await axios.put(`/api/events/${slug}`, {
+      toast.loading("Sending announcement");
+      await axios.put(`/api/events/${slug}`, {
         announcement,
       });
       setAnnouncement("");
-      toast({
-        title: "Announcement sent successfully",
-      });
+      toast.success("Announcement sent successfully");
     } catch (error) {
-      toast({
-        title: "Failed to send the announcement",
-      });
+      toast.error("Failed to send the announcement");
     }
   };
 
   const handleInvitation = async () => {
     try {
       setIsInvitationLoading(true);
-      const response = await axios.put(`/api/contest/${selectedContestId}`, {
+      await axios.put(`/api/contest/${selectedContestId}`, {
         invitationLink: invitation,
       });
       setIsInvitationLoading(false);
-      toast({
-        title: "Invitation link updated successfully",
-      });
+      toast.success("Invitation link updated successfully");
     } catch (error) {
       console.error("Error updating invitation link:", error);
       setIsInvitationLoading(false);
-      toast({
-        title: "Failed to update invitation link",
-      });
+      toast.error("Failed to update invitation link");
     }
   };
 
@@ -103,8 +90,8 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
                     : "hover:bg-gray-300"
                 }`}
                 onClick={() => {
-                  setSelectedContestId(contest.contestId),
-                    setInvitation(contest.invitationLink);
+                  setSelectedContestId(contest.contestId);
+                  setInvitation(contest.invitationLink);
                 }}
               >
                 {contest.contestId}

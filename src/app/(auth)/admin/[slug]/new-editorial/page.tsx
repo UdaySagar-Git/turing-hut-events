@@ -8,16 +8,28 @@ import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { PenLine } from 'lucide-react'
+import { getCodeString } from 'rehype-rewrite';
+import katex from "katex";
+import 'katex/dist/katex.css';
 
 export default function NewEditorialPage({ params }: { params: { slug: string } }) {
   const { slug } = params
   const router = useRouter()
-  const { toast } = useToast()
   const [problemIndex, setProblemIndex] = useState("")
   const [problemLink, setProblemLink] = useState("")
-  const [content, setContent] = useState("**Hello world!!!**")
+
+  const initialContent = `This is to display the 
+\`\$\$\c = \\pm\\sqrt{a^2 + b^2}\$\$\`
+ in one line
+
+\`\`\`KaTeX
+c = \\pm\\sqrt{a^2 + b^2}
+\`\`\`
+`;
+
+  const [content, setContent] = useState(initialContent)
 
   const handleSubmit = async () => {
     try {
@@ -27,18 +39,11 @@ export default function NewEditorialPage({ params }: { params: { slug: string } 
         content
       })
       if (res.status === 200) {
-        toast({
-          title: "Editorial Created",
-          description: "Your new editorial has been successfully created.",
-        });
+        toast.success("Editorial Created")
         router.push(`/events/${slug}/editorials/${problemIndex}`)
       }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "There was an error creating the editorial. Please try again.",
-        variant: "destructive",
-      })
+    } catch {
+      toast.error("Error creating editorial. Please try again.")
     }
   }
 
@@ -78,6 +83,30 @@ export default function NewEditorialPage({ params }: { params: { slug: string } 
                 onChange={(newValue) => setContent(newValue || "")}
                 height={400}
                 preview="edit"
+                previewOptions={{
+                  components: {
+                    code: ({ children = [], className, ...props }) => {
+                      if (typeof children === 'string' && /^\$\$(.*)\$\$/.test(children)) {
+                        const html = katex.renderToString(children.replace(/^\$\$(.*)\$\$/, '$1'), {
+                          throwOnError: false,
+                        });
+                        return <code dangerouslySetInnerHTML={{ __html: html }} style={{ background: 'transparent' }} />;
+                      }
+                      const code = props.node && props.node.children ? getCodeString(props.node.children) : children;
+                      if (
+                        typeof code === 'string' &&
+                        typeof className === 'string' &&
+                        /^language-katex/.test(className.toLocaleLowerCase())
+                      ) {
+                        const html = katex.renderToString(code, {
+                          throwOnError: false,
+                        });
+                        return <code style={{ fontSize: '150%' }} dangerouslySetInnerHTML={{ __html: html }} />;
+                      }
+                      return <code className={String(className)}>{children}</code>;
+                    },
+                  },
+                }}
               />
             </div>
           </div>

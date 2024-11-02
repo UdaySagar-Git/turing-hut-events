@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import AddEventDialog from "@/components/AddEventDialog";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import getCurrentUser from "@/actions/getCurrentUser";
 import { LuClock2 } from "react-icons/lu";
 
