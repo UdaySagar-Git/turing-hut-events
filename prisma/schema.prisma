@@ -15,6 +15,7 @@ datasource db {
 
 enum Role {
   ADMIN
+  TEAM_LEADER
   USER
 }
 
@@ -25,7 +26,15 @@ model User {
   role     Role   @default(USER)
   password String
 
+  cfHandle String?
+  hrHandle String?
+
   Session Session[]
+
+  teamName String?
+
+  Event   Event?  @relation(fields: [eventId], references: [id])
+  eventId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -41,6 +50,8 @@ model Event {
   editorials   Editorial[]
 
   contests Contest[]
+
+  participants User[]
 
   startTime DateTime
   endTime   DateTime

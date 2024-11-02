@@ -1,15 +1,7 @@
-import { getEvent } from "@/actions/events";
-import Loading from "@/components/common/Loading";
-import EventPageDetails from "./EventPage";
+import { redirect } from "next/navigation"
+
 const EventPage = async ({ params }: { params: { slug: string } }) => {
-
-  const data = await getEvent(params.slug)
-
-  if (!data) {
-    return <Loading />
-  }
-
-  return <EventPageDetails slug={params.slug} event={data} />
+  redirect(`/events/${params.slug}/leaderboard`)
 }
 
 export default EventPage

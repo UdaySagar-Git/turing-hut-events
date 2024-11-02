@@ -23,22 +23,23 @@ const SigninPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      toast.loading("Signing in...");
       const response = await signIn("credentials", {
         email: email.toLowerCase(),
         password,
         callbackUrl: "/profile",
         redirect: false,
       });
-      toast.dismiss();
+
       if (response?.error) {
         toast.error("Invalid username or password");
       } else {
-        toast.success("Redirecting to dashboard...");
+        toast.success("Signed in successfully!");
         router.push("/");
       }
-    } catch (error: any) {
+    } catch (error) {
+      console.error("Sign in error:", error);
       toast.error("An error occurred. Please try again later");
     } finally {
       setLoading(false);

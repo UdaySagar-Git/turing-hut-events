@@ -7,7 +7,7 @@ import Page from "@/components/common/Page";
 import CreateContestModal from "../_components/create-contest-modal";
 import CreateManualSubmissionModal from "../_components/create-manual-submission-modal";
 import axios from "axios";
-import FetchSubmissions from "@/app/events/[slug]/FetchSubmissions";
+import FetchSubmissions from "@/app/events/[slug]/_components/FetchSubmissions";
 import Link from "next/link";
 
 const AdminDashboard = ({ params }: { params: { slug: string } }) => {
@@ -84,11 +84,10 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             {contests.map((contest: any) => (
               <div
                 key={contest.contestId}
-                className={`cursor-pointer p-2 ${
-                  selectedContestId === contest.contestId
+                className={`cursor-pointer p-2 ${selectedContestId === contest.contestId
                     ? "bg-blue-500 text-white"
                     : "hover:bg-gray-300"
-                }`}
+                  }`}
                 onClick={() => {
                   setSelectedContestId(contest.contestId);
                   setInvitation(contest.invitationLink);

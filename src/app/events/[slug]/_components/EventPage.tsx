@@ -175,7 +175,7 @@ const EventPageDetails = async ({
               Editorials
             </Button>
           </Link>
-          {session && (
+          {session?.role === "ADMIN" && (
             <Link href={`/admin/${slug}`}>
               <Button className="transform transition-all duration-200 hover:scale-105 hover:shadow-lg">
                 Admin
@@ -184,7 +184,7 @@ const EventPageDetails = async ({
           )}
         </div>
 
-        {session && (
+        {session?.role === "ADMIN" && (
           <div className="flex gap-2 m-5">
             {contestIds.map((contestId) => (
               <span key={contestId}>
@@ -218,9 +218,8 @@ const EventPageDetails = async ({
                 {problems.map((prob, index: number) => (
                   <th
                     key={index}
-                    className={`w-16 px-[5.2px] py-[3px] border-r ${
-                      data[prob] ? "text-[#0a0]" : "text-gray-400"
-                    } underline border-[#E1E1E1] text-center`}
+                    className={`w-16 px-[5.2px] py-[3px] border-r ${data[prob] ? "text-[#0a0]" : "text-gray-400"
+                      } underline border-[#E1E1E1] text-center`}
                   >
                     <TooltipProvider>
                       <Tooltip>
@@ -248,9 +247,8 @@ const EventPageDetails = async ({
                 ([handle, userData], idx) => (
                   <tr
                     key={handle}
-                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${
-                      idx % 2 !== 0 ? "bg-white" : "bg-[#f8f6f6]"
-                    } `}
+                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${idx % 2 !== 0 ? "bg-white" : "bg-[#f8f6f6]"
+                      } `}
                   >
                     <td className="w-9 border-r border-[#E1E1E1] text-center">
                       {idx + 1}
@@ -290,9 +288,9 @@ const EventPageDetails = async ({
                         <p className="font-[480] ">
                           {userData.submissions[problemIndex]?.time > 0
                             ? userData.submissions[problemIndex].accepted &&
-                              formatTime(
-                                userData.submissions[problemIndex].time
-                              )
+                            formatTime(
+                              userData.submissions[problemIndex].time
+                            )
                             : " "}
                         </p>
                       </td>
@@ -318,14 +316,14 @@ const EventPageDetails = async ({
                     <p className="text-[11px] text-[#0a0]">
                       {
                         totalAccepts[
-                          problemIndex.charCodeAt(0) - "A".charCodeAt(0)
+                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
                         ]
                       }
                     </p>
                     <p className="text-xs text-neutral-500">
                       {
                         totalTries[
-                          problemIndex.charCodeAt(0) - "A".charCodeAt(0)
+                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
                         ]
                       }
                     </p>

@@ -32,7 +32,7 @@ const Events = async () => {
         <div className="bg-desktop bg-cover h-full w-full" />
         <div className="bg-mobile bg-cover h-full w-full" />
       </div>
-      {session && <AddEventDialog />}
+      {session?.role === "ADMIN" && <AddEventDialog />}
 
       {session && (
         <Link href="/profile">
