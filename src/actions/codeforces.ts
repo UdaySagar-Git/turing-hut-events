@@ -96,14 +96,43 @@ export const getContestStandingsAsManager = async (contestId: string) => {
 
 export const addCodeSubmissions = async (contestId: string, data: InputJsonValue) => {
   try {
+
+    const participants = await db.user.findMany({
+      where: {
+        Event: {
+          contests: {
+            some: {
+              contestId: contestId
+            }
+          }
+        },
+        role: "TEAM_LEADER"
+      },
+      select: {
+        email: true,
+        cfHandle: true,
+        teamName: true,
+        name: true,
+      }
+    });
+
+    const filteredData = (data as any[]).filter((submission) => {
+      const participant = participants.find((participant) => participant.cfHandle === submission.author.members[0].handle);
+      if (participant) {
+        submission.teamName = participant.teamName;
+        return true;
+      }
+      return false;
+    });
+
     const newSubmission = await db.codeSubmission.create({
       data: {
         contestId: contestId,
-        data: data
+        data: filteredData
       }
     })
 
-    return { message: "Submissions added successfully", newSubmission }
+    return { message: "Submissions added successfully", newSubmission, participants, filteredData }
 
   } catch (err: any) {
 

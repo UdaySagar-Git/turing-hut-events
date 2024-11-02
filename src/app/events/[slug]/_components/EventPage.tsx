@@ -52,6 +52,7 @@ const EventPageDetails = async ({
     submissions.forEach((submission: any) => {
       if (submission?.author.participantType === "CONTESTANT") {
         const handle = submission.author.members[0].handle;
+        const teamName = submission.teamName;
         const time = submission.relativeTimeSeconds;
         const verdict = submission.verdict;
         const passedTestCount = submission.passedTestCount;
@@ -65,6 +66,7 @@ const EventPageDetails = async ({
             totalSubmissionTime: 0,
             totalPenality: 0,
             submissions: {},
+            teamName: teamName
           };
         }
 
@@ -254,7 +256,7 @@ const EventPageDetails = async ({
                       {idx + 1}
                     </td>
                     <td className="pe-2 font-[600] ps-3 border-r border-[#E1E1E1] text-left">
-                      <p>{handle}</p>
+                      <p>{userData.teamName || handle}</p>
                     </td>
                     <td className="w-10 border-r border-[#E1E1E1] text-center">
                       {userData.acceptedCount}

@@ -14,6 +14,7 @@ export interface Submission {
   };
   verdict: string;
   passedTestCount: number;
+  teamName: string;
 }
 
 export interface ContestStatus {
@@ -24,6 +25,7 @@ export interface ContestStatus {
 
 export interface IUser {
   [handle: string]: {
+    teamName: string;
     acceptedCount: number;
     totalSubmissionTime: number;
     totalPenality: number;
