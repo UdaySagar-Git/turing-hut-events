@@ -23,7 +23,7 @@ const Events = async () => {
     return <Loading />;
   }
 
-  const session = await getCurrentUser();
+  const currentUser = await getCurrentUser();
 
   return (
     <div>
@@ -32,9 +32,9 @@ const Events = async () => {
         <div className="bg-desktop bg-cover h-full w-full" />
         <div className="bg-mobile bg-cover h-full w-full" />
       </div>
-      {session?.role === "ADMIN" && <AddEventDialog />}
+      {currentUser?.role === "ADMIN" && <AddEventDialog />}
 
-      {session && (
+      {currentUser && (
         <Link href="/profile">
           <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded fixed top-4 right-40 z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
             Profile
@@ -78,7 +78,7 @@ const Events = async () => {
                     Details
                   </Button>
                 </Link>
-                {session && (
+                {currentUser?.role === "ADMIN" && (
                   <Link href={`/admin/${event.slug}`}>
                     <Button className="transform transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-300">
                       Admin

@@ -158,6 +158,7 @@ const EventPageDetails = async ({
   userSubmissions = sortedList;
 
   const session = await getCurrentUser();
+  const myCFHandle = session?.cfHandle;
 
   return !userSubmissions ? (
     <div>No data available.</div>
@@ -249,7 +250,7 @@ const EventPageDetails = async ({
                 ([handle, userData], idx) => (
                   <tr
                     key={handle}
-                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${idx % 2 !== 0 ? "bg-white" : "bg-[#f8f6f6]"
+                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${handle === myCFHandle ? "bg-amber-100" : idx % 2 !== 0 ? "bg-white" : "bg-[#f8f6f6]"
                       } `}
                   >
                     <td className="w-9 border-r border-[#E1E1E1] text-center">
