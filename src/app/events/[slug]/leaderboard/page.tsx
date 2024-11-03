@@ -18,11 +18,15 @@ const EventPage = async ({ params }: { params: { slug: string } }) => {
     <div className="relative">
       {!currentUser ? (
         <Link href="/signin" className="absolute top-0 right-4 ">
-          <Button>Signin</Button>
+          <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded fixed top-4 right-40 z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
+            Signin
+          </Button>
         </Link>
       ) : (
         <Link href="/profile" className="absolute top-0 right-4 ">
-          <Button>Profile</Button>
+          <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded fixed top-4 right-40 z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
+            Profile
+          </Button>
         </Link>
       )}
       <EventPageDetails slug={params.slug} event={data} />

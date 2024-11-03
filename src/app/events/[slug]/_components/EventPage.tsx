@@ -17,6 +17,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
+import Guidelines from "./Guidelines";
+import Announcements from "./Announcements";
+import MarkdownPreview from "../editorials/[problemIndex]/MarkdownPreview";
 
 const EventPageDetails = async ({
   event,
@@ -169,20 +173,20 @@ const EventPageDetails = async ({
           {event.name}
         </h1>
         <h1 className="text-3xl font-bold text-red-600/85 text-center mb-5">
-          {event.announcement}
+          <MarkdownPreview content={event.announcement ?? ""} />
         </h1>
 
         <div className="flex justify-center gap-8">
           <Link href={`/events/${slug}/editorials`}>
-            <Button className="transform transition-all duration-200 hover:scale-105 hover:shadow-lg">
+            <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded  z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
               Editorials
             </Button>
           </Link>
           {session?.role === "ADMIN" && (
             <Link href={`/admin/${slug}`}>
-              <Button className="transform transition-all duration-200 hover:scale-105 hover:shadow-lg">
-                Admin
-              </Button>
+              <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded  z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
+              Admin
+            </Button>
             </Link>
           )}
         </div>
@@ -198,12 +202,23 @@ const EventPageDetails = async ({
         )}
 
         <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto my-5 text-center bg-[#E1E1E1] rounded-lg">
-          <div className="flex justify-between">
+          <div className="flex justify-between h-7 mr-0.5">
             <h1 className="text-left font-[400] ps-1 flex ">
               Standings
               <TfiMenuAlt className="mt-1.5 ms-1 font-semibold" />
             </h1>
-            <FaPlay className="text-right mt-1 py-0.5 px-[3px] me-1 text-blue-400 " />
+            <div className="">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger className="w-full text-sm">
+                    <Info className="pt-1"/>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <Guidelines/>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
           <table className="w-full table-auto border-collapse border font text-sm border-gray-100 ">
             <thead className="h-[20px] bg-white">
@@ -221,7 +236,7 @@ const EventPageDetails = async ({
                 {problems.map((prob, index: number) => (
                   <th
                     key={index}
-                    className={`w-16 px-[5.2px] py-[3px] border-r ${data[prob] ? "text-[#0a0]" : "text-gray-400"
+                    className={`w-16 px-[5.2px] py-[3px] border-r ${data[prob] ? "text-[#0000CC]" : "text-gray-400"
                       } underline border-[#E1E1E1] text-center`}
                   >
                     <TooltipProvider>
@@ -232,7 +247,7 @@ const EventPageDetails = async ({
                           </div>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="text-sm text-neutral-500">
+                          <p className="text-sm text-white">
                             Last Updated:{" "}
                             {lastUpdated[prob]
                               ? day(lastUpdated[prob]).format("hh:mm:ss A")
@@ -250,7 +265,7 @@ const EventPageDetails = async ({
                 ([handle, userData], idx) => (
                   <tr
                     key={handle}
-                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${handle === myCFHandle ? "bg-amber-100" : idx % 2 !== 0 ? "bg-white" : "bg-[#f8f6f6]"
+                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${handle === myCFHandle ? "bg-[#DDEEFF]" : idx % 2 !== 0 ? "bg-white" : "bg-[#f8f6f6]"
                       } `}
                   >
                     <td className="w-9 border-r border-[#E1E1E1] text-center">
@@ -280,7 +295,7 @@ const EventPageDetails = async ({
                             </span>
                           ) : userData.submissions[problemIndex] &&
                             userData.submissions[problemIndex]?.wrongs !== 0 ? (
-                            <span className="text-[#00a]">
+                            <span className="text-[#00a] font-normal">
                               <FaMinus className="inline-block pb-0.5 ps-2" />
                               {userData.submissions[problemIndex]?.wrongs}
                             </span>
