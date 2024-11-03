@@ -6,12 +6,13 @@ import 'katex/dist/katex.css';
 
 
 const MarkdownPreview = ({
-  content
+  content,mode="light"
 }: {
-  content: string
+  content: string,
+  mode?:"light" | "dark"
 }) => {
   return (
-    <div data-color-mode="light">
+    <div data-color-mode={mode}>
       <MDEditor.Markdown
         source={content}
         components={{

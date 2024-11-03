@@ -4,7 +4,7 @@ import React from 'react'
 function Guidelines() {
   return (
     <div>
-      <MarkdownPreview content='hola buddy' />
+      <MarkdownPreview mode='dark' content='hola buddy' />
     </div>
   )
 }

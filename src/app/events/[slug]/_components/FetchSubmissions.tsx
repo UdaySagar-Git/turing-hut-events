@@ -6,7 +6,7 @@ import React, { useEffect } from 'react'
 
 const FetchSubmissions = ({ contestId }: { contestId?: string }) => {
 
-  const REFRESH_TIME = 50 * 1000 ;
+  const REFRESH_TIME = 5 * 1000 ;
 
   const handleFetchSubmissions = async () => {
     if (!contestId) {
