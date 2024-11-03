@@ -3,6 +3,7 @@ import "./globals.css";
 import Logo from "@/assets/images/turinghut.png";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Turing Hut",
@@ -26,6 +27,7 @@ export default async function RootLayout({
         session={session}>
         <html lang="en" className="bg-bg-gray-100">
           <body>
+            <Toaster />
             {children}
           </body>
         </html>

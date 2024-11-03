@@ -9,6 +9,10 @@ import CreateManualSubmissionModal from "../_components/create-manual-submission
 import axios from "axios";
 import FetchSubmissions from "@/app/events/[slug]/_components/FetchSubmissions";
 import Link from "next/link";
+import MDEditor from "@uiw/react-md-editor";
+import { getCodeString } from 'rehype-rewrite';
+import katex from "katex";
+import 'katex/dist/katex.css';
 
 const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const [selectedContestId, setSelectedContestId] = useState<string>("");
@@ -85,8 +89,8 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
               <div
                 key={contest.contestId}
                 className={`cursor-pointer p-2 ${selectedContestId === contest.contestId
-                    ? "bg-blue-500 text-white"
-                    : "hover:bg-gray-300"
+                  ? "bg-blue-500 text-white"
+                  : "hover:bg-gray-300"
                   }`}
                 onClick={() => {
                   setSelectedContestId(contest.contestId);
@@ -139,17 +143,42 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
               </Button>
             </div>
           ) : (
-            <div className="flex flex-col items-center p-6 bg-white shadow-md rounded-lg max-w-lg mx-auto mt-10">
+            <div className="flex flex-col items-center p-6 bg-white shadow-md rounded-lg mx-auto mt-10">
               <h2 className="text-xl font-semibold mb-4 text-gray-700">
                 Make an Announcement
               </h2>
-
-              <input
-                value={announcement}
-                onChange={(e) => setAnnouncement(e.target.value)}
-                placeholder="Write your announcement here..."
-                className="w-full h-20 p-4 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-300"
-              />
+              <div data-color-mode="light" className="border rounded-md overflow-hidden w-full">
+                <MDEditor
+                  value={announcement}
+                  onChange={(newValue) => setAnnouncement(newValue || "")}
+                  height={400}
+                  preview="edit"
+                  previewOptions={{
+                    components: {
+                      code: ({ children = [], className, ...props }) => {
+                        if (typeof children === 'string' && /^\$\$(.*)\$\$/.test(children)) {
+                          const html = katex.renderToString(children.replace(/^\$\$(.*)\$\$/, '$1'), {
+                            throwOnError: false,
+                          });
+                          return <code dangerouslySetInnerHTML={{ __html: html }} style={{ background: 'transparent' }} />;
+                        }
+                        const code = props.node && props.node.children ? getCodeString(props.node.children) : children;
+                        if (
+                          typeof code === 'string' &&
+                          typeof className === 'string' &&
+                          /^language-katex/.test(className.toLocaleLowerCase())
+                        ) {
+                          const html = katex.renderToString(code, {
+                            throwOnError: false,
+                          });
+                          return <code style={{ fontSize: '150%' }} dangerouslySetInnerHTML={{ __html: html }} />;
+                        }
+                        return <code className={String(className)}>{children}</code>;
+                      },
+                    },
+                  }}
+                />
+              </div>
 
               <button
                 onClick={handleAnnouncementSubmit}
