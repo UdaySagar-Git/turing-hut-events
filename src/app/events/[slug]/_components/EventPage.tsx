@@ -1,7 +1,6 @@
 import Loading from "@/components/common/Loading";
 import { getAllSubmissionsByEvent } from "@/actions/codeforces";
 import { TfiMenuAlt } from "react-icons/tfi";
-import { FaPlay } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { Contest, Event } from "@prisma/client";
@@ -19,8 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import Guidelines from "./Guidelines";
-import Announcements from "./Announcements";
-import MarkdownPreview from "../editorials/[problemIndex]/MarkdownPreview";
+import MarkdownPreview from "@/components/MarkdownPreview";
 
 const EventPageDetails = async ({
   event,

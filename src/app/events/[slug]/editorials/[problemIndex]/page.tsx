@@ -1,12 +1,12 @@
 import React from 'react'
 import { getEditorial } from '@/actions/events'
-import MarkdownPreview from './MarkdownPreview'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, ExternalLink } from "lucide-react"
 import Link from 'next/link'
 import getCurrentUser from '@/actions/getCurrentUser'
 import DeleteEditorial from '../_components/DeleteEditorial'
+import MarkdownPreview from '@/components/MarkdownPreview'
 
 
 export default async function EditorialPage({

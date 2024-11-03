@@ -1,5 +1,5 @@
+import MarkdownPreview from '@/components/MarkdownPreview';
 import React from 'react'
-import MarkdownPreview from '../editorials/[problemIndex]/MarkdownPreview';
 
 function Guidelines() {
   return (
