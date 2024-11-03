@@ -29,7 +29,7 @@ const EventPage = async ({ params }: { params: { slug: string } }) => {
           </Button>
         </Link>
       )}
-      <EventPageDetails slug={params.slug} event={data} />
+      <EventPageDetails slug={params.slug} event={data} currentUser={currentUser} />
     </div>
   )
 }

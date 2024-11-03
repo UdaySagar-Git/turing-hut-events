@@ -127,7 +127,7 @@ const ProfilePage = async () => {
                                       Login Time
                                     </p>
                                     <p className="text-sm font-medium">
-                                      {day(s.createdAt).format(
+                                      {day(s.createdAt).utc().add(5.5, "hours").format(
                                         "DD MMM YY, hh:mm:ss A"
                                       )}
                                     </p>
@@ -140,7 +140,7 @@ const ProfilePage = async () => {
                                       Expires
                                     </p>
                                     <p className="text-sm font-medium">
-                                      {day(s.expires).format(
+                                      {day(s.expires).utc().add(5.5, "hours").format(
                                         "DD MMM YY, hh:mm:ss A"
                                       )}
                                     </p>

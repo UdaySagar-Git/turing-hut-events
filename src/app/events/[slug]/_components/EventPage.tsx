@@ -1,15 +1,15 @@
+"use client"
+
 import Loading from "@/components/common/Loading";
-import { getAllSubmissionsByEvent } from "@/actions/codeforces";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { Contest, Event } from "@prisma/client";
-import { IUser } from "@/interfaces/codeforces";
+import { IUser, Submission } from "@/interfaces/codeforces";
 import FetchSubmissions from "./FetchSubmissions";
 import day from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import getCurrentUser from "@/actions/getCurrentUser";
 import {
   Tooltip,
   TooltipContent,
@@ -19,16 +19,42 @@ import {
 import { Info } from "lucide-react";
 import Guidelines from "./Guidelines";
 import MarkdownPreview from "@/components/MarkdownPreview";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import AutoRefresh from "./AutoRefetch";
 
-const EventPageDetails = async ({
+interface ISubmissionData {
+  [key: string]: Submission[];
+}
+
+interface ILastUpdated {
+  [key: string]: string;
+}
+
+const EventPageDetails = ({
   event,
   slug,
+  currentUser,
 }: {
   event: Event & { contests: Contest[] };
   slug: string;
+  currentUser: any;
 }) => {
-  const { data, lastUpdated } = await getAllSubmissionsByEvent(slug);
+
+  const [data, setData] = useState<ISubmissionData | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<ILastUpdated | null>(null);
+
   const contestIds = event.contests.map((contest) => contest.contestId);
+
+  const fetchData = async () => {
+    const res = await axios.get(`/api/events/${slug}/leaderboard`);
+    setData(res.data.data);
+    setLastUpdated(res.data.lastUpdated);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [slug]);
 
   if (!data) {
     return <Loading />;
@@ -51,7 +77,7 @@ const EventPageDetails = async ({
 
   // to make req obj to print table
   Object.entries(data).forEach(([problemIndex, submissions]) => {
-    submissions.forEach((submission: any) => {
+    submissions.forEach((submission: Submission) => {
       if (submission?.author.participantType === "CONTESTANT") {
         const handle = submission.author.members[0].handle;
         const teamName = submission.teamName;
@@ -159,8 +185,7 @@ const EventPageDetails = async ({
   ) as IUser;
   userSubmissions = sortedList;
 
-  const session = await getCurrentUser();
-  const myCFHandle = session?.cfHandle;
+  const myCFHandle = currentUser?.cfHandle;
 
   return !userSubmissions ? (
     <div>No data available.</div>
@@ -180,16 +205,16 @@ const EventPageDetails = async ({
               Editorials
             </Button>
           </Link>
-          {session?.role === "ADMIN" && (
+          {currentUser?.role === "ADMIN" && (
             <Link href={`/admin/${slug}`}>
               <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded  z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
-              Admin
-            </Button>
+                Admin
+              </Button>
             </Link>
           )}
         </div>
 
-        {session?.role === "ADMIN" && (
+        {currentUser?.role === "ADMIN" && (
           <div className="flex gap-2 m-5">
             {contestIds.map((contestId) => (
               <span key={contestId}>
@@ -198,6 +223,8 @@ const EventPageDetails = async ({
             ))}
           </div>
         )}
+
+        <AutoRefresh onRefresh={fetchData} />
 
         <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto my-5 text-center bg-[#E1E1E1] rounded-lg">
           <div className="flex justify-between h-7 mr-0.5">
@@ -209,10 +236,10 @@ const EventPageDetails = async ({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger className="w-full text-sm">
-                    <Info className="pt-1"/>
+                    <Info className="pt-1" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <Guidelines/>
+                    <Guidelines />
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -247,8 +274,8 @@ const EventPageDetails = async ({
                         <TooltipContent>
                           <p className="text-sm text-white">
                             Last Updated:{" "}
-                            {lastUpdated[prob]
-                              ? day(lastUpdated[prob]).format("hh:mm:ss A")
+                            {lastUpdated && lastUpdated[prob]
+                              ? day(lastUpdated[prob]).utc().add(5.5, "hours").format("hh:mm:ss A")
                               : "null"}
                           </p>
                         </TooltipContent>
