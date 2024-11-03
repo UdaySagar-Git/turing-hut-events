@@ -53,6 +53,8 @@ model Event {
 
   participants User[]
 
+  problemIndices String[] @default(["A", "B", "C", "D", "E", "F", "G", "H"])
+
   startTime DateTime
   endTime   DateTime
 
@@ -61,8 +63,8 @@ model Event {
 }
 
 model Editorial {
-  id      String  @id @default(cuid())
-  Event   Event?  @relation(fields: [eventSlug], references: [slug],onDelete: Cascade)
+  id        String  @id @default(cuid())
+  Event     Event?  @relation(fields: [eventSlug], references: [slug], onDelete: Cascade)
   eventSlug String?
 
   problemIndex String

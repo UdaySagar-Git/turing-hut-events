@@ -71,9 +71,9 @@ const EventPageDetails = ({
   let userSubmissions: IUser | null = {};
 
   // fix all questions
-  const problems = ["A", "B", "C", "D", "E", "F", "G", "H"];
-  const totalAccepts: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
-  const totalTries: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
+  const problems = event.problemIndices
+  const totalAccepts: number[] = Array(problems.length).fill(0);
+  const totalTries: number[] = Array(problems.length).fill(0);
 
   // to make req obj to print table
   Object.entries(data).forEach(([problemIndex, submissions]) => {
