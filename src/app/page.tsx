@@ -15,6 +15,8 @@ import AddEventDialog from "@/components/AddEventDialog";
 import { Toaster } from "sonner";
 import getCurrentUser from "@/actions/getCurrentUser";
 import { LuClock2 } from "react-icons/lu";
+import desktopImage from "@/assets/images/desktopImage.png";
+import mobileImage from "@/assets/images/mobileImage.jpg";
 
 const Events = async () => {
   const data = await getAllEvents();
@@ -29,8 +31,14 @@ const Events = async () => {
     <div>
       <Toaster />
       <div className="absolute top-0 z-[-2] h-screen w-screen bg-white">
-        <div className="bg-desktop bg-cover h-full w-full" />
-        <div className="bg-mobile bg-cover h-full w-full" />
+        <div
+          className="bg-desktop h-full w-full"
+          style={{ backgroundImage: `url(${desktopImage.src})` }}
+        />
+        <div
+          className="bg-mobile h-full w-full"
+          style={{ backgroundImage: `url(${mobileImage.src})` }}
+        />
       </div>
       {currentUser?.role === "ADMIN" && <AddEventDialog />}
 
@@ -42,7 +50,7 @@ const Events = async () => {
         </Link>
       )}
 
-      <h1 className="text-center mb-8 mt-16 text-4xl font-extrabold leading-none tracking-tight text-gray-50 md:text-5xl lg:text-6xl dark:text-white">
+      <h1 className="text-center mb-8 mt-16 max-sm:mt-20 text-4xl font-extrabold leading-none tracking-tight text-gray-100 md:text-5xl lg:text-6xl dark:text-white">
         Events
       </h1>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
@@ -64,7 +72,7 @@ const Events = async () => {
               }}
             >
               <CardHeader>
-                <CardTitle className="text-2xl hover:text-gray-900 font-semibold">
+                <CardTitle className="text-2xl hover:text-gray-900  font-semibold">
                   {event.name}
                 </CardTitle>
                 <CardDescription className="text-sm text-gray-100 flex justify-start items-center gap-2">

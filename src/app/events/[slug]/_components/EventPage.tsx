@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Loading from "@/components/common/Loading";
 import { TfiMenuAlt } from "react-icons/tfi";
@@ -17,11 +17,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
-import Guidelines from "./Guidelines";
-import MarkdownPreview from "@/components/MarkdownPreview";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import AutoRefresh from "./AutoRefetch";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import MarkdownPreview from "@/components/MarkdownPreview";
 
 interface ISubmissionData {
   [key: string]: Submission[];
@@ -40,9 +47,10 @@ const EventPageDetails = ({
   slug: string;
   currentUser: any;
 }) => {
-
   const [data, setData] = useState<ISubmissionData | null>(null);
   const [lastUpdated, setLastUpdated] = useState<ILastUpdated | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const guidelines = "This is the temporary text of the contest ";
 
   const contestIds = event.contests.map((contest) => contest.contestId);
 
@@ -71,7 +79,7 @@ const EventPageDetails = ({
   let userSubmissions: IUser | null = {};
 
   // fix all questions
-  const problems = event.problemIndices
+  const problems = event.problemIndices;
   const totalAccepts: number[] = Array(problems.length).fill(0);
   const totalTries: number[] = Array(problems.length).fill(0);
 
@@ -94,7 +102,7 @@ const EventPageDetails = ({
             totalSubmissionTime: 0,
             totalPenality: 0,
             submissions: {},
-            teamName: teamName
+            teamName: teamName,
           };
         }
 
@@ -233,16 +241,28 @@ const EventPageDetails = ({
               <TfiMenuAlt className="mt-1.5 ms-1 font-semibold" />
             </h1>
             <div className="">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger className="w-full text-sm">
-                    <Info className="pt-1" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <Guidelines />
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <TooltipProvider>
+                  <Tooltip>
+                    <DialogTrigger asChild>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 mt-2 me-1 cursor-pointer hover:text-gray-800 text-gray-950 hover:bg-gray00" />
+                      </TooltipTrigger>
+                    </DialogTrigger>
+                    <TooltipContent>
+                      <p>Guidelines</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Guidelines</DialogTitle>
+                  </DialogHeader>
+                  <div className="mt-4 max-h-[60vh] overflow-y-auto">
+                    <MarkdownPreview content={guidelines} />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
           <table className="w-full table-auto border-collapse border font text-sm border-gray-100 ">
@@ -261,8 +281,9 @@ const EventPageDetails = ({
                 {problems.map((prob, index: number) => (
                   <th
                     key={index}
-                    className={`w-16 px-[5.2px] py-[3px] border-r ${data[prob] ? "text-[#0000CC]" : "text-gray-400"
-                      } underline border-[#E1E1E1] text-center`}
+                    className={`w-16 px-[5.2px] py-[3px] border-r ${
+                      data[prob] ? "text-[#0000CC]" : "text-gray-400"
+                    } underline border-[#E1E1E1] text-center`}
                   >
                     <TooltipProvider>
                       <Tooltip>
@@ -275,7 +296,10 @@ const EventPageDetails = ({
                           <p className="text-sm text-white">
                             Last Updated:{" "}
                             {lastUpdated && lastUpdated[prob]
-                              ? day(lastUpdated[prob]).utc().add(5.5, "hours").format("hh:mm:ss A")
+                              ? day(lastUpdated[prob])
+                                  .utc()
+                                  .add(5.5, "hours")
+                                  .format("hh:mm:ss A")
                               : "null"}
                           </p>
                         </TooltipContent>
@@ -290,8 +314,13 @@ const EventPageDetails = ({
                 ([handle, userData], idx) => (
                   <tr
                     key={handle}
-                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${handle === myCFHandle ? "bg-[#DDEEFF]" : idx % 2 !== 0 ? "bg-white" : "bg-[#f8f6f6]"
-                      } `}
+                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${
+                      handle === myCFHandle
+                        ? "bg-[#DDEEFF]"
+                        : idx % 2 !== 0
+                        ? "bg-white"
+                        : "bg-[#f8f6f6]"
+                    } `}
                   >
                     <td className="w-9 border-r border-[#E1E1E1] text-center">
                       {idx + 1}
@@ -331,9 +360,9 @@ const EventPageDetails = ({
                         <p className="font-[480] ">
                           {userData.submissions[problemIndex]?.time > 0
                             ? userData.submissions[problemIndex].accepted &&
-                            formatTime(
-                              userData.submissions[problemIndex].time
-                            )
+                              formatTime(
+                                userData.submissions[problemIndex].time
+                              )
                             : " "}
                         </p>
                       </td>
@@ -359,14 +388,14 @@ const EventPageDetails = ({
                     <p className="text-[11px] text-[#0a0]">
                       {
                         totalAccepts[
-                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
+                          problemIndex.charCodeAt(0) - "A".charCodeAt(0)
                         ]
                       }
                     </p>
                     <p className="text-xs text-neutral-500">
                       {
                         totalTries[
-                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
+                          problemIndex.charCodeAt(0) - "A".charCodeAt(0)
                         ]
                       }
                     </p>

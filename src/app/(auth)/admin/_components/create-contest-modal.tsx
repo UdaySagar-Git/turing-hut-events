@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { FaPlus } from "react-icons/fa6";
 
 const CreateContestModal = ({
   eventId,
@@ -42,7 +43,6 @@ const CreateContestModal = ({
         eventId: eventId,
       };
 
-
       const res = await axios.post(
         `/api/contest/${formattedContest.contestId}`,
         formattedContest
@@ -56,7 +56,6 @@ const CreateContestModal = ({
         endTime: "",
       });
       setIsAddContestOpen(false);
-
     } catch (error) {
       toast.dismiss();
       toast.error("Error creating contest");
@@ -67,7 +66,11 @@ const CreateContestModal = ({
     <div>
       <Dialog open={isAddContestOpen} onOpenChange={setIsAddContestOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className="mt-8 w-full hover:bg-gray-200">
+          <Button
+            variant="outline"
+            className="mt-10 w-full font-semibold hover:bg-gray-200 flex justify-center items-center"
+          >
+            <FaPlus className=" w-4 h-4 " />
             Add Contest
           </Button>
         </DialogTrigger>

@@ -10,9 +10,11 @@ import axios from "axios";
 import FetchSubmissions from "@/app/events/[slug]/_components/FetchSubmissions";
 import Link from "next/link";
 import MDEditor from "@uiw/react-md-editor";
-import { getCodeString } from 'rehype-rewrite';
+import { getCodeString } from "rehype-rewrite";
 import katex from "katex";
-import 'katex/dist/katex.css';
+import "katex/dist/katex.css";
+import { MdDashboardCustomize } from "react-icons/md";
+import { GrAnnounce } from "react-icons/gr";
 
 const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const [selectedContestId, setSelectedContestId] = useState<string>("");
@@ -20,7 +22,6 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [event, setEvent] = useState<any>(null);
   const [announcement, setAnnouncement] = useState("");
-  const [isInvitationLoading, setIsInvitationLoading] = useState(false);
   const slug = params.slug;
 
   useEffect(() => {
@@ -53,7 +54,6 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
       return;
     }
     try {
-      toast.loading("Sending announcement");
       await axios.put(`/api/events/${slug}`, {
         announcement,
       });
@@ -66,15 +66,11 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
 
   const handleInvitation = async () => {
     try {
-      setIsInvitationLoading(true);
       await axios.put(`/api/contest/${selectedContestId}`, {
         invitationLink: invitation,
       });
-      setIsInvitationLoading(false);
       toast.success("Invitation link updated successfully");
     } catch (error) {
-      console.error("Error updating invitation link:", error);
-      setIsInvitationLoading(false);
       toast.error("Failed to update invitation link");
     }
   };
@@ -88,10 +84,11 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             {contests.map((contest: any) => (
               <div
                 key={contest.contestId}
-                className={`cursor-pointer p-2 ${selectedContestId === contest.contestId
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-gray-300"
-                  }`}
+                className={`cursor-pointer p-2 ${
+                  selectedContestId === contest.contestId
+                    ? "bg-blue-500 text-white"
+                    : "hover:bg-gray-300"
+                }`}
                 onClick={() => {
                   setSelectedContestId(contest.contestId);
                   setInvitation(contest.invitationLink);
@@ -103,7 +100,7 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             <CreateContestModal eventId={eventId} slug={slug} />
             <div className="py-4">
               <Link href={`/admin/${slug}/new-editorial`}>
-                <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded">
+                <Button className="mt-3 bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded">
                   Create Editorial
                 </Button>
               </Link>
@@ -113,14 +110,22 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
         <div className="flex-1 p-8 overflow-auto">
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-5">
-              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+              <h1 className="text-2xl font-bold flex items-center justify-start space-x-5">
+                Admin Dashboard
+                <MdDashboardCustomize className="ml-2 w-7 h-7 " />
+              </h1>
               {selectedContestId && (
                 <FetchSubmissions contestId={selectedContestId} />
               )}
             </div>
-            {selectedContestId && (
-              <CreateManualSubmissionModal contestId={selectedContestId} />
-            )}
+            <div className="flex items-center justify-center space-x-5">
+              <Link href={`/events/${slug}/leaderboard`}>
+                <Button variant="outline">View Standings</Button>
+              </Link>
+              {selectedContestId && (
+                <CreateManualSubmissionModal contestId={selectedContestId} />
+              )}
+            </div>
           </div>
 
           {selectedContestId ? (
@@ -144,10 +149,13 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
             </div>
           ) : (
             <div className="flex flex-col items-center p-6 bg-white shadow-md rounded-lg mx-auto mt-10">
-              <h2 className="text-xl font-semibold mb-4 text-gray-700">
-                Make an Announcement
+              <h2 className="text-xl font-semibold mb-4 text-red-700 flex justify-center items-center">
+                Make an Announcement <GrAnnounce className="ml-2 w-6 h-6 " />
               </h2>
-              <div data-color-mode="light" className="border rounded-md overflow-hidden w-full">
+              <div
+                data-color-mode="light"
+                className="border rounded-md overflow-hidden w-full"
+              >
                 <MDEditor
                   value={announcement}
                   onChange={(newValue) => setAnnouncement(newValue || "")}
@@ -156,24 +164,45 @@ const AdminDashboard = ({ params }: { params: { slug: string } }) => {
                   previewOptions={{
                     components: {
                       code: ({ children = [], className, ...props }) => {
-                        if (typeof children === 'string' && /^\$\$(.*)\$\$/.test(children)) {
-                          const html = katex.renderToString(children.replace(/^\$\$(.*)\$\$/, '$1'), {
-                            throwOnError: false,
-                          });
-                          return <code dangerouslySetInnerHTML={{ __html: html }} style={{ background: 'transparent' }} />;
-                        }
-                        const code = props.node && props.node.children ? getCodeString(props.node.children) : children;
                         if (
-                          typeof code === 'string' &&
-                          typeof className === 'string' &&
+                          typeof children === "string" &&
+                          /^\$\$(.*)\$\$/.test(children)
+                        ) {
+                          const html = katex.renderToString(
+                            children.replace(/^\$\$(.*)\$\$/, "$1"),
+                            {
+                              throwOnError: false,
+                            }
+                          );
+                          return (
+                            <code
+                              dangerouslySetInnerHTML={{ __html: html }}
+                              style={{ background: "transparent" }}
+                            />
+                          );
+                        }
+                        const code =
+                          props.node && props.node.children
+                            ? getCodeString(props.node.children)
+                            : children;
+                        if (
+                          typeof code === "string" &&
+                          typeof className === "string" &&
                           /^language-katex/.test(className.toLocaleLowerCase())
                         ) {
                           const html = katex.renderToString(code, {
                             throwOnError: false,
                           });
-                          return <code style={{ fontSize: '150%' }} dangerouslySetInnerHTML={{ __html: html }} />;
+                          return (
+                            <code
+                              style={{ fontSize: "150%" }}
+                              dangerouslySetInnerHTML={{ __html: html }}
+                            />
+                          );
                         }
-                        return <code className={String(className)}>{children}</code>;
+                        return (
+                          <code className={String(className)}>{children}</code>
+                        );
                       },
                     },
                   }}

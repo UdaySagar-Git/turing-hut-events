@@ -83,18 +83,19 @@ body {
 }
 
 .bg-desktop {
-  background-image: url("https://i.postimg.cc/hgvnqMXx/image.png");
-}
-
-.bg-mobile {
-  background-image: url("https://i.pinimg.com/736x/24/79/c1/2479c17119652c468be03b465f3ad214.jpg");
-}
-
-.bg-cover {
+  /* background-image: url("/assets/images/desktopImage.png"); */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
+
+.bg-mobile {
+  /* background-image: url("/assets/images/mobileImage.jpg"); */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 
 @media (max-width: 768px) {
   .bg-desktop {
