@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import MarkdownPreview from "@/components/MarkdownPreview";
+import Loading from "@/components/common/Loading";
 
 interface ISubmissionData {
   [key: string]: Submission[];
@@ -36,14 +37,13 @@ interface ILastUpdated {
 }
 
 const EventPageDetails = ({
-  event,
   slug,
   currentUser,
 }: {
-  event: Event & { contests: Contest[] };
   slug: string;
   currentUser: any;
 }) => {
+  const [event, setEvent] = useState<Event & { contests: Contest[] } | null>(null);
   const [data, setData] = useState<ISubmissionData | null>(null);
   const [lastUpdated, setLastUpdated] = useState<ILastUpdated | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -59,10 +59,10 @@ const EventPageDetails = ({
 
 5)ㅤEach question’s penalty scoring is independent, i.e., time scoring begins from 0 for every question from the start time of that particular question.`
 
-  const contestIds = event.contests.map((contest) => contest.contestId);
 
   const fetchData = async () => {
     const res = await axios.get(`/api/events/${slug}/leaderboard`);
+    setEvent(res.data.event);
     setData(res.data.data);
     setLastUpdated(res.data.lastUpdated);
   };
@@ -71,6 +71,11 @@ const EventPageDetails = ({
     fetchData();
   }, []);
 
+  if (!event) {
+    return <Loading />
+  }
+
+  const contestIds = event.contests.map((contest) => contest.contestId);
   // Format time from seconds to mm:ss
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -82,7 +87,7 @@ const EventPageDetails = ({
   let userSubmissions: IUser | null = {};
 
   // fix all questions
-  const problems = event.problemIndices;
+  const problems = event?.problemIndices;
   const totalAccepts: number[] = Array(problems.length).fill(0);
   const totalTries: number[] = Array(problems.length).fill(0);
 
@@ -206,7 +211,7 @@ const EventPageDetails = ({
         <h1 className="text-center text-4xl mt-5 font-semibold mb-3 text-[#114f3e]">
           {event.name}
         </h1>
-        <h1 className="text-3xl font-bold text-red-600/85 text-center mb-5">
+        <h1 className="text-3xl font-bold text-center mb-5">
           <MarkdownPreview content={event.announcement ?? ""} />
         </h1>
 

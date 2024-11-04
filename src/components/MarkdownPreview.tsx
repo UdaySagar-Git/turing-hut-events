@@ -4,15 +4,15 @@ import { getCodeString } from 'rehype-rewrite';
 import katex from 'katex';
 import 'katex/dist/katex.css';
 
-
 const MarkdownPreview = ({
-  content,mode="light"
+  content, mode = "light"
 }: {
   content: string,
-  mode?:"light" | "dark"
+  mode?: "light" | "dark",
+  isNew?: boolean
 }) => {
   return (
-    <div data-color-mode={mode}>
+    <div data-color-mode={mode} className="relative">
       <MDEditor.Markdown
         source={content}
         components={{
@@ -42,4 +42,4 @@ const MarkdownPreview = ({
   )
 }
 
-export default MarkdownPreview
+export default MarkdownPreview;
