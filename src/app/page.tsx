@@ -75,13 +75,23 @@ const Events = async () => {
                 <CardTitle className="text-2xl hover:text-gray-900  font-semibold">
                   {event.name}
                 </CardTitle>
-                <CardDescription className="text-sm text-gray-100 flex justify-start items-center gap-2">
-                  {day(event.startTime).fromNow()}{" "}
-                  <LuClock2 className="w-4 h-4" />
+                <CardDescription className="flex items-center justify-start gap-2 text-sm text-gray-100">
+                  <LuClock2 className="h-4 w-4" />
+                  <span>Starts At :</span>
+                  {day(event.startTime)
+                    .utc()
+                    .format("DD MMM YY, hh:mm:ss A")}
+                </CardDescription>
+                <CardDescription className="flex items-center justify-start gap-2 text-sm text-gray-100">
+                  <LuClock2 className="h-4 w-4" />
+                  <span>Ends At :</span>
+                  {day(event.endTime)
+                    .utc()
+                    .format("DD MMM YY, hh:mm:ss A")}
                 </CardDescription>
               </CardHeader>
               <CardFooter className="flex space-x-2 justify-center pt-4">
-                <Link href={`/events/${event.slug}`}>
+                <Link href={`/events/${event.slug}/leaderboard`}>
                   <Button className="transform transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-300">
                     Details
                   </Button>

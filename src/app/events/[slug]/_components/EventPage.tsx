@@ -50,7 +50,15 @@ const EventPageDetails = ({
   const [data, setData] = useState<ISubmissionData | null>(null);
   const [lastUpdated, setLastUpdated] = useState<ILastUpdated | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const guidelines = "This is the temporary text of the contest ";
+  const guidelines = `
+# Guidelines
+
+1 There is no partial scoring in this round.
+2. If your ranks are tied based on your score, tie will be broken based on your total penalty.
+3. Besides the first testcase, if you get other verdict besides accepted on any other test case, you will get a penalty of 10 minutes.
+4. The penalty will only be added if you are able to get an accepted verdict for that particular question in the stipulated time.
+5. Each question's penalty scoring is independent, i.e., time scoring begins from 0 for every question from the start time of that particular question.
+`
 
   const contestIds = event.contests.map((contest) => contest.contestId);
 
@@ -254,10 +262,7 @@ const EventPageDetails = ({
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Guidelines</DialogTitle>
-                  </DialogHeader>
+                <DialogContent className="sm:max-w-[900px]">
                   <div className="mt-4 max-h-[60vh] overflow-y-auto">
                     <MarkdownPreview content={guidelines} />
                   </div>
