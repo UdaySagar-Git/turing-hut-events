@@ -47,6 +47,8 @@ const EventPageDetails = ({
   const [data, setData] = useState<ISubmissionData | null>(null);
   const [lastUpdated, setLastUpdated] = useState<ILastUpdated | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
   const guidelines = `
 # Guidelines
 1)ㅤThere is **no partial scoring** in this round. 
@@ -59,23 +61,50 @@ const EventPageDetails = ({
 
 5)ㅤEach question’s penalty scoring is independent, i.e., time scoring begins from 0 for every question from the start time of that particular question.`
 
+  const isCurrentContest = (contest: Contest) => {
+    const now = new Date().toISOString();
+    const startTime = new Date(contest.startTime).toISOString();
+    const endTime = new Date(contest.endTime).toISOString();
+    return startTime <= now && endTime > now;
+  };
 
   const fetchData = async () => {
     const res = await axios.get(`/api/events/${slug}/leaderboard`);
     setEvent(res.data.event);
     setData(res.data.data);
     setLastUpdated(res.data.lastUpdated);
+
+    const currentContest = res.data.event.contests.find(isCurrentContest);
+    if (currentContest) {
+      const endTime = day(new Date(currentContest.endTime)).valueOf();
+      const now = Date.now();
+      const timeLeftInSeconds = Math.floor((endTime - now) / 1000);
+      setTimeLeft(timeLeftInSeconds);
+    }
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (!prev || prev <= 0) {
+          clearInterval(interval);
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
   if (!event) {
     return <Loading />
   }
 
-  const getIndex=(problemIndex:string)=>{
+  const getIndex = (problemIndex: string) => {
     return event?.problemIndices.findIndex((index) => index === problemIndex)
   }
 
@@ -86,6 +115,13 @@ const EventPageDetails = ({
     const secondsLeft = seconds % 60;
     return `${minutes}:${secondsLeft.toString().padStart(2, "0")}`;
   };
+
+  const hourMinSec = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secondsLeft = seconds % 60;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secondsLeft.toString().padStart(2, "0")}`;
+  }
 
   const list: IUser = {};
   let userSubmissions: IUser | null = {};
@@ -233,6 +269,14 @@ const EventPageDetails = ({
 
         <div className="flex justify-between items-center gap-8 max-w-[1172px] min-w-[892px] mx-auto ">
           <AutoRefresh onRefresh={fetchData} />
+          <div className="text-xl text-gray-600 -ml-32 -mb-2">
+            {timeLeft ? (
+              <span>
+                <span className="font-semibold mr-1">Time Left :</span>
+                {hourMinSec(timeLeft)}
+              </span>
+            ) : "Contest Ended"}
+          </div>
           <div className="flex gap-4">
             {currentUser?.role === "ADMIN" && (
               <Link href={`/admin/${slug}`}>
@@ -401,10 +445,10 @@ const EventPageDetails = ({
                     className="w-16 py-0  border-r border-[#E1E1E1] text-xs"
                   >
                     <p className="text-[11px] text-[#0a0]">
-                    {
-                      problemIndex &&
-                      totalAccepts[getIndex(problemIndex)]
-                    }
+                      {
+                        problemIndex &&
+                        totalAccepts[getIndex(problemIndex)]
+                      }
                     </p>
                     <p className="text-xs text-neutral-500">
                       {
