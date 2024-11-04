@@ -1,6 +1,5 @@
 "use client";
 
-import Loading from "@/components/common/Loading";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
@@ -24,8 +23,6 @@ import AutoRefresh from "./AutoRefetch";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import MarkdownPreview from "@/components/MarkdownPreview";
@@ -52,13 +49,15 @@ const EventPageDetails = ({
   const [isOpen, setIsOpen] = useState(false);
   const guidelines = `
 # Guidelines
+1)ㅤThere is **no partial scoring** in this round. 
 
-1 There is no partial scoring in this round.
-2. If your ranks are tied based on your score, tie will be broken based on your total penalty.
-3. Besides the first testcase, if you get other verdict besides accepted on any other test case, you will get a penalty of 10 minutes.
-4. The penalty will only be added if you are able to get an accepted verdict for that particular question in the stipulated time.
-5. Each question's penalty scoring is independent, i.e., time scoring begins from 0 for every question from the start time of that particular question.
-`
+2)ㅤIf your ranks are tied based on your score, tie will be broken based on your total penalty.
+
+3)ㅤFor every test case after the first, a **10-minute penalty** will be added for each verdict other than "Accepted."
+
+4)ㅤThe penalty will only be added if you are able to get an accepted verdict for that particular question in the stipulated time.
+
+5)ㅤEach question’s penalty scoring is independent, i.e., time scoring begins from 0 for every question from the start time of that particular question.`
 
   const contestIds = event.contests.map((contest) => contest.contestId);
 
@@ -70,11 +69,7 @@ const EventPageDetails = ({
 
   useEffect(() => {
     fetchData();
-  }, [slug]);
-
-  if (!data) {
-    return <Loading />;
-  }
+  }, []);
 
   // Format time from seconds to mm:ss
   const formatTime = (seconds: number) => {
@@ -92,7 +87,7 @@ const EventPageDetails = ({
   const totalTries: number[] = Array(problems.length).fill(0);
 
   // to make req obj to print table
-  Object.entries(data).forEach(([problemIndex, submissions]) => {
+  Object.entries(data ?? {}).forEach(([problemIndex, submissions]) => {
     submissions.forEach((submission: Submission) => {
       if (submission?.author.participantType === "CONTESTANT") {
         const handle = submission.author.members[0].handle;
@@ -215,21 +210,6 @@ const EventPageDetails = ({
           <MarkdownPreview content={event.announcement ?? ""} />
         </h1>
 
-        <div className="flex justify-center gap-8">
-          <Link href={`/events/${slug}/editorials`}>
-            <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded  z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
-              Editorials
-            </Button>
-          </Link>
-          {currentUser?.role === "ADMIN" && (
-            <Link href={`/admin/${slug}`}>
-              <Button className="bg-[#06553F] hover:bg-[#06553F]/90 text-white font-bold px-4 py-2 rounded  z-10 shadow-md shadow-blue-500 hover:shadow-lg hover:shadow-blue-500 ">
-                Admin
-              </Button>
-            </Link>
-          )}
-        </div>
-
         {currentUser?.role === "ADMIN" && (
           <div className="flex gap-2 m-5">
             {contestIds.map((contestId) => (
@@ -240,9 +220,31 @@ const EventPageDetails = ({
           </div>
         )}
 
-        <AutoRefresh onRefresh={fetchData} />
 
-        <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto my-5 text-center bg-[#E1E1E1] rounded-lg">
+        <div className="flex justify-between items-center gap-8 max-w-[1172px] min-w-[892px] mx-auto ">
+          <AutoRefresh onRefresh={fetchData} />
+          <div className="flex gap-4">
+            {currentUser?.role === "ADMIN" && (
+              <Link href={`/admin/${slug}`}>
+                <Button >
+                  Admin
+                </Button>
+              </Link>
+            )}
+            <Link href={`https://ide.geeksforgeeks.org/`} target="_blank">
+              <Button >
+                IDE
+              </Button>
+            </Link>
+            <Link href={`/events/${slug}/editorials`}>
+              <Button >
+                Editorials
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto mb-5 text-center bg-[#E1E1E1] rounded-lg">
           <div className="flex justify-between h-7 mr-0.5">
             <h1 className="text-left font-[400] ps-1 flex ">
               Standings
@@ -286,9 +288,8 @@ const EventPageDetails = ({
                 {problems.map((prob, index: number) => (
                   <th
                     key={index}
-                    className={`w-16 px-[5.2px] py-[3px] border-r ${
-                      data[prob] ? "text-[#0000CC]" : "text-gray-400"
-                    } underline border-[#E1E1E1] text-center`}
+                    className={`w-16 px-[5.2px] py-[3px] border-r ${data?.[prob] ? "text-[#0000CC]" : "text-gray-400"
+                      } underline border-[#E1E1E1] text-center`}
                   >
                     <TooltipProvider>
                       <Tooltip>
@@ -302,9 +303,9 @@ const EventPageDetails = ({
                             Last Updated:{" "}
                             {lastUpdated && lastUpdated[prob]
                               ? day(lastUpdated[prob])
-                                  .utc()
-                                  .add(5.5, "hours")
-                                  .format("hh:mm:ss A")
+                                .utc()
+                                .add(5.5, "hours")
+                                .format("hh:mm:ss A")
                               : "null"}
                           </p>
                         </TooltipContent>
@@ -319,13 +320,12 @@ const EventPageDetails = ({
                 ([handle, userData], idx) => (
                   <tr
                     key={handle}
-                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${
-                      handle === myCFHandle
-                        ? "bg-[#DDEEFF]"
-                        : idx % 2 !== 0
+                    className={`text-gray-800 h-10 border-b border-[#E1E1E1] text-center ${handle === myCFHandle
+                      ? "bg-[#DDEEFF]"
+                      : idx % 2 !== 0
                         ? "bg-white"
                         : "bg-[#f8f6f6]"
-                    } `}
+                      } `}
                   >
                     <td className="w-9 border-r border-[#E1E1E1] text-center">
                       {idx + 1}
@@ -365,9 +365,9 @@ const EventPageDetails = ({
                         <p className="font-[480] ">
                           {userData.submissions[problemIndex]?.time > 0
                             ? userData.submissions[problemIndex].accepted &&
-                              formatTime(
-                                userData.submissions[problemIndex].time
-                              )
+                            formatTime(
+                              userData.submissions[problemIndex].time
+                            )
                             : " "}
                         </p>
                       </td>
@@ -393,14 +393,14 @@ const EventPageDetails = ({
                     <p className="text-[11px] text-[#0a0]">
                       {
                         totalAccepts[
-                          problemIndex.charCodeAt(0) - "A".charCodeAt(0)
+                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
                         ]
                       }
                     </p>
                     <p className="text-xs text-neutral-500">
                       {
                         totalTries[
-                          problemIndex.charCodeAt(0) - "A".charCodeAt(0)
+                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
                         ]
                       }
                     </p>
