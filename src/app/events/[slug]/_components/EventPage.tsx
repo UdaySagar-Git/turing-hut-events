@@ -75,6 +75,10 @@ const EventPageDetails = ({
     return <Loading />
   }
 
+  const getIndex=(problemIndex:string)=>{
+    return event?.problemIndices.findIndex((index) => index === problemIndex)
+  }
+
   const contestIds = event.contests.map((contest) => contest.contestId);
   // Format time from seconds to mm:ss
   const formatTime = (seconds: number) => {
@@ -100,7 +104,7 @@ const EventPageDetails = ({
         const time = submission.relativeTimeSeconds;
         const verdict = submission.verdict;
         const passedTestCount = submission.passedTestCount;
-        const ind: number = problemIndex.charCodeAt(0) - "A".charCodeAt(0);
+        const ind: number = getIndex(problemIndex)
 
         // user not found
         if (!list[handle]) {
@@ -160,7 +164,7 @@ const EventPageDetails = ({
   Object.keys(list).forEach((key) => {
     const user = list[key];
     Object.keys(user.submissions).forEach((ques) => {
-      const ind: number = ques.charCodeAt(0) - "A".charCodeAt(0);
+      const ind: number = getIndex(ques)
       if (user.submissions[ques].accepted) {
         totalAccepts[ind]++;
       }
@@ -202,6 +206,7 @@ const EventPageDetails = ({
   userSubmissions = sortedList;
 
   const myCFHandle = currentUser?.cfHandle;
+
 
   return !userSubmissions ? (
     <div>No data available.</div>
@@ -396,17 +401,14 @@ const EventPageDetails = ({
                     className="w-16 py-0  border-r border-[#E1E1E1] text-xs"
                   >
                     <p className="text-[11px] text-[#0a0]">
-                      {
-                        totalAccepts[
-                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
-                        ]
-                      }
+                    {
+                      problemIndex &&
+                      totalAccepts[getIndex(problemIndex)]
+                    }
                     </p>
                     <p className="text-xs text-neutral-500">
                       {
-                        totalTries[
-                        problemIndex.charCodeAt(0) - "A".charCodeAt(0)
-                        ]
+                        totalTries[getIndex(problemIndex)]
                       }
                     </p>
                   </td>
