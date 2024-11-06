@@ -48,6 +48,7 @@ const EventPageDetails = ({
   const [lastUpdated, setLastUpdated] = useState<ILastUpdated | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [eventEnded, setEventEnded] = useState<boolean>(false);
 
   const guidelines = `
 # Guidelines
@@ -74,10 +75,15 @@ const EventPageDetails = ({
     setData(res.data.data);
     setLastUpdated(res.data.lastUpdated);
 
+    const now = Date.now();
+    const eventEndTime= day(res.data.event?.endTime).valueOf();
+
+    const isEventEnded = ( now - eventEndTime >0) ? true : false;
+    setEventEnded(isEventEnded);
+
     const currentContest = res.data.event.contests.find(isCurrentContest);
     if (currentContest) {
       const endTime = day(new Date(currentContest.endTime)).valueOf();
-      const now = Date.now();
       const timeLeftInSeconds = Math.floor((endTime - now) / 1000);
       setTimeLeft(timeLeftInSeconds);
     }
@@ -266,37 +272,50 @@ const EventPageDetails = ({
           </div>
         )}
 
-
-        <div className="flex justify-between items-center gap-8 max-w-[1172px] min-w-[892px] mx-auto ">
-          <AutoRefresh onRefresh={fetchData} />
-          <div className="text-xl text-gray-600 -ml-32 -mb-2">
-            {timeLeft ? (
-              <span>
-                <span className="font-semibold mr-1">Time Left :</span>
-                {hourMinSec(timeLeft)}
-              </span>
-            ) : "Contest Ended"}
-          </div>
-          <div className="flex gap-4">
-            {currentUser?.role === "ADMIN" && (
-              <Link href={`/admin/${slug}`}>
-                <Button >
-                  Admin
-                </Button>
+        {
+          eventEnded ? 
+            <div className="my-4 w-full flex space-x-3 justify-center">
+              <Link href={`/events/${slug}/problems`}>
+                <Button className="">All Problems</Button>
               </Link>
-            )}
-            <Link href={`https://ide.geeksforgeeks.org/`} target="_blank">
-              <Button >
-                IDE
-              </Button>
-            </Link>
-            <Link href={`/events/${slug}/editorials`}>
-              <Button >
-                Editorials
-              </Button>
-            </Link>
-          </div>
-        </div>
+              <Link href={`/events/${slug}/editorials`}>
+                <Button >
+                  Editorials
+                </Button>
+                </Link>
+            </div>
+          :
+            <div className="flex justify-between items-center gap-8 max-w-[1172px] min-w-[892px] mx-auto ">
+              <AutoRefresh onRefresh={fetchData} />
+              <div className="text-xl text-gray-600 -ml-32 -mb-2">
+                {timeLeft ? (
+                  <span>
+                    <span className="font-semibold mr-1">Time Left :</span>
+                    {hourMinSec(timeLeft)}
+                  </span>
+                ) : "Contest Ended"}
+              </div>
+              <div className="flex gap-4">
+                {currentUser?.role === "ADMIN" && (
+                  <Link href={`/admin/${slug}`}>
+                    <Button >
+                      Admin
+                    </Button>
+                  </Link>
+                )}
+                <Link href={`https://ide.geeksforgeeks.org/`} target="_blank">
+                  <Button >
+                    IDE
+                  </Button>
+                </Link>
+                <Link href={`/events/${slug}/editorials`}>
+                  <Button >
+                    Editorials
+                  </Button>
+                </Link>
+              </div>
+            </div>
+        }
 
         <div className="max-w-[1172px] min-w-[892px] px-[3px] pb-[3px] overflow-x-auto mx-auto mb-5 text-center bg-[#E1E1E1] rounded-lg">
           <div className="flex justify-between h-7 mr-0.5">

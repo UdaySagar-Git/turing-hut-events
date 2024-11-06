@@ -86,3 +86,17 @@ export const deleteEditorial=async (id:string)=>{
   })
   return res
 }
+
+
+export const getProblemsData= async (slug:string)=>{
+  const res= await db.event.findFirst({
+    where:{
+      slug
+    },
+    select:{
+      editorials:true
+    }
+  })
+  console.log(res)
+  return res
+}

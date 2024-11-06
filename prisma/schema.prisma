@@ -70,6 +70,7 @@ model Editorial {
 
   problemIndex String
   problemLink  String?
+  problemName String?
   content      String
 
   createdAt DateTime @default(now())

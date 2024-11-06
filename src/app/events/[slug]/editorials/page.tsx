@@ -12,6 +12,16 @@ export default async function EventEditorialsPage({
 }) {
   const editorials = await getEventEditorials(params.slug);
 
+  const sortedEditorials = editorials.sort((editorial1, editorial2) => {
+    if (editorial1.problemIndex < editorial2.problemIndex) {
+      return -1;
+    }
+    if (editorial1.problemIndex > editorial2.problemIndex) {
+      return 1;
+    }
+    return 0;
+  });
+
   return (
     <div className="relative">
       <div className="absolute -top-2 left-4 flex space-x-8 ">
@@ -34,7 +44,7 @@ export default async function EventEditorialsPage({
               </p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {editorials.map((editorial, ind) => (
+                {sortedEditorials.map((editorial, ind) => (
                   <Button
                     key={ind}
                     variant="outline"
