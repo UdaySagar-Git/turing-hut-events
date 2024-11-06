@@ -275,8 +275,8 @@ const EventPageDetails = ({
         {
           eventEnded ? 
             <div className="my-4 w-full flex space-x-3 justify-center">
-              <Link href={`/events/${slug}/problems`}>
-                <Button className="">All Problems</Button>
+              <Link href={`/events/${slug}/dashboard`}>
+                <Button className="">Problemset</Button>
               </Link>
               <Link href={`/events/${slug}/editorials`}>
                 <Button >

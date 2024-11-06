@@ -58,9 +58,9 @@ async function Page({ params:{slug}}: { params: { slug: string } }) {
                   <a href={problem.problemLink ?? "#"} target='_blank' >{problem.content.split('*')[0].slice(2).slice(0, -2)}</a>
                 </td>
                 <td className="w-20 border-r border-[#E1E1E1] text-center">
-                  <Link href={`/events/${slug}/editorials/${problem.problemIndex}`}>
+                  <a href={`/events/${slug}/editorials/${problem.problemIndex}`} target='_blank' >
                     {problem.problemIndex}
-                  </Link>
+                  </a>
                 </td>
               </tr>
             ))}
