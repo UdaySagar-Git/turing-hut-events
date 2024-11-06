@@ -7,6 +7,20 @@ async function Page({ params:{slug}}: { params: { slug: string } }) {
 
   const problemsData= await getProblemsData(slug);
 
+  if(!problemsData){
+    return <div className="">No Data</div>
+  }
+
+  const sortedProblemData=problemsData.editorials.sort((editorial1, editorial2) => {
+    if (editorial1.problemIndex < editorial2.problemIndex) {
+      return -1;
+    }
+    if (editorial1.problemIndex > editorial2.problemIndex) {
+      return 1;
+    }
+    return 0;
+  });
+
   return (
     <div className="">
       <div className="ms-5 mt-8 flex space-x-8 ">
@@ -28,7 +42,7 @@ async function Page({ params:{slug}}: { params: { slug: string } }) {
             </tr>
           </thead>
           <tbody>
-            {problemsData?.editorials.map((problem, index) => (
+            {sortedProblemData?.map((problem, index) => (
               <tr
                 key={index}
                 className={`text-[#0000CC] underline h-10 border-b border-[#E1E1E1] text-center ${
