@@ -51,13 +51,11 @@ export const createEditorial = async ({
   eventSlug,
   problemIndex,
   problemLink,
-  problemName,
   content
 }: {
   eventSlug: string,
   problemIndex: string,
   problemLink?: string,
-  problemName?:string,
   content: string
 }) => {
   const res = await db.editorial.create({
@@ -65,7 +63,6 @@ export const createEditorial = async ({
       eventSlug,
       problemIndex,
       problemLink,
-      problemName,
       content
     }
   })
