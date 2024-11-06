@@ -18,13 +18,11 @@ const FetchSubmissions = ({ contestId }: { contestId?: string }) => {
     }
 
     setIsRefreshing(true)
-    console.log("handleFetchSubmissions", contestId)
 
     try {
       const res = await axios.get(`/api/contest/${contestId}/cf-submissions`)
       const statusData = res.data.statusData.result;
       const addSubmissions = await axios.post(`/api/contest/${contestId}/submissions`, { data: statusData })
-      console.log(addSubmissions)
 
       setNextRefresh(Date.now() + refreshTime)
     } catch (error) {

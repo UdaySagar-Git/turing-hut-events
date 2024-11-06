@@ -20,6 +20,19 @@ export const getEvent = async (slug: string) => {
   return res
 };
 
+export const getEventName = async (slug: string) => {
+  const res = await db.event.findUnique({
+    where: {
+      slug: slug
+    },
+    select:{
+      name:true
+    }
+  })
+
+  return res
+};
+
 export const createEvent = async (data: any) => {
   const res = await db.event.create({
     data: {
@@ -100,6 +113,5 @@ export const getProblemsData= async (slug:string)=>{
       editorials:true
     }
   })
-  console.log(res)
   return res
 }
