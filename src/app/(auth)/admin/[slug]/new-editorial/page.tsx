@@ -19,7 +19,6 @@ export default function NewEditorialPage({ params }: { params: { slug: string } 
   const router = useRouter()
   const [problemIndex, setProblemIndex] = useState("")
   const [problemLink, setProblemLink] = useState("")
-  const [problemName, setProblemName] = useState("")
 
   const initialContent = `This is to display the 
 \`\$\$\c = \\pm\\sqrt{a^2 + b^2}\$\$\`
@@ -74,15 +73,6 @@ c = \\pm\\sqrt{a^2 + b^2}
               placeholder="https://codeforces.com/problem"
               value={problemLink}
               onChange={(e) => setProblemLink(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="problemName">Problem Link</Label>
-            <Input
-              id="problemName"
-              placeholder="Shailesh's Dedication"
-              value={problemName}
-              onChange={(e) => setProblemName(e.target.value)}
             />
           </div>
           <div className="space-y-2">

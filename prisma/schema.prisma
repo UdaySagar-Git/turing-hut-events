@@ -10,8 +10,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url = env("POSTGRES_PRISMA_URL") 
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 enum Role {
@@ -70,7 +70,6 @@ model Editorial {
 
   problemIndex String
   problemLink  String?
-  problemName String?
   content      String
 
   createdAt DateTime @default(now())
