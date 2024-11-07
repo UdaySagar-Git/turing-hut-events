@@ -26,6 +26,7 @@ export interface ContestStatus {
 export interface IUser {
   [handle: string]: {
     teamName: string;
+    ranking:number;
     acceptedCount: number;
     totalSubmissionTime: number;
     totalPenality: number;

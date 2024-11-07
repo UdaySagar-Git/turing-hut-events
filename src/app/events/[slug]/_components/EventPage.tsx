@@ -151,6 +151,7 @@ const EventPageDetails = ({
         // user not found
         if (!list[handle]) {
           list[handle] = {
+            ranking:1,
             acceptedCount: 0,
             totalWrongs: 0,
             totalSubmissionTime: 0,
@@ -246,6 +247,18 @@ const EventPageDetails = ({
     })
   ) as IUser;
   userSubmissions = sortedList;
+
+  let rank=1;
+  const users= Object.keys(userSubmissions)
+
+  users.forEach((user:string,ind:number)=>{
+    if(ind>0){
+      if(userSubmissions[users[ind]].acceptedCount !== userSubmissions[users[ind-1]].acceptedCount || userSubmissions[users[ind]].totalPenality !== userSubmissions[users[ind-1]].totalPenality){
+        rank++;
+      }
+      userSubmissions[users[ind]].ranking=rank;
+    }
+  })
 
   const myCFHandle = currentUser?.cfHandle;
 
@@ -345,6 +358,7 @@ const EventPageDetails = ({
               </Dialog>
             </div>
           </div>
+
           <table className="w-full table-auto border-collapse border font text-sm border-gray-100 ">
             <thead className="h-[20px] bg-white">
               <tr className=" text-gray-700 border-b ">
@@ -401,7 +415,7 @@ const EventPageDetails = ({
                       } `}
                   >
                     <td className="w-9 border-r border-[#E1E1E1] text-center">
-                      {idx + 1}
+                      {userData.ranking}
                     </td>
                     <td className="pe-2 font-[600] ps-3 border-r border-[#E1E1E1] text-left">
                       <p>{userData.teamName || handle}</p>
